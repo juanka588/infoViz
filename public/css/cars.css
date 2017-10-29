@@ -1,0 +1,43 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 29/10/2017, 02:12:10 PM
+    Author     : JuanCamilo
+*/
+
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    max-width: 80px;
+    padding: 2px;				
+    font: 10px sans-serif;		
+    background: lightsteelblue;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+.country:hover{
+    stroke: purple !important;
+}
+
+#car_info{
+    margin: 0 auto;
+    width: 30%;
+    padding: 10px;
+    margin: 16px;
+    background-color: lightblue;
+    display: inline-block;
+}
+
+#svg_container{
+    display: inline-block;
+}
+
+#car_info span{
+    display: block;
+}
