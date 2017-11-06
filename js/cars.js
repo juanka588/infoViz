@@ -1,16 +1,21 @@
+let MARK_SIZE = 60;
 
 let margin = {top: 30, right: 20, bottom: 30, left: 50},
-        width = 600 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+        width = 800 - margin.left - margin.right,
+        height = 600 - margin.top - margin.bottom;
+
+
+var modal = null;
+var span = null;
 
 // Define the div for the tooltip
 var div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
-let MARK_SIZE = 60;
-
 function init() {
+    addModalLogic();
+
     d3.tsv("./data/cars.tsv", function (error, data) {
         if (error)
             throw error;
@@ -31,19 +36,35 @@ function init() {
         prepareSVG(data);
     });
 }
+function addModalLogic() {
+    modal = document.getElementById('car_info');
+    span = document.getElementsByClassName("close")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    };
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    };
+}
+
 function prepareSVG(data) {
     // Set the ranges
     var xAxis = d3.scaleLinear().rangeRound([0, width]).nice();
     var yAxis = d3.scaleLinear().rangeRound([height, 0]).nice();
 
 
-    xAxis.domain(d3.extent(data, function (d) {
-        return  d.weight;
-    }));
+//    xAxis.domain(d3.extent(data, function (d) {
+//        return  d.weight;
+//    }));
 
-    yAxis.domain(d3.extent(data, function (d) {
-        return  d.mpg;
-    }));
+    xAxis.domain([1500, 5500]);
+
+//    yAxis.domain(d3.extent(data, function (d) {
+//        return  d.mpg;
+//    }));
+    yAxis.domain([5, 50]);
 
     // Adds the svg canvas
     var svg = d3.select("#svg_container")
@@ -51,7 +72,7 @@ function prepareSVG(data) {
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
     var g = svg.append("g")
-            .attr("transform", "translate(" + margin.left + ",0)");
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
     showAxis(svg, xAxis, yAxis);
 
     //add points
@@ -100,7 +121,7 @@ function displayItem(e, g, data, xAxis, yAxis) {
                 return blues(d.year);
             })
             .style("fill", function () {
-                return "none";
+                return "transparent";
             })
             .attr("d", e.s);
     addListeners(displayElement);
@@ -115,7 +136,7 @@ function addListeners(element) {
                 div.transition()
                         .duration(200)
                         .style("opacity", .9);
-                div.html("observation: " + d.name + "<br>year: " + d.year)
+                div.html("weight: " + d.weight + "<br>mpg: " + d.mpg)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
 
@@ -135,19 +156,30 @@ function showAxis(svg, xAxis, yAxis) {
     // Add the X Axis
     svg.append("g")
             .attr("class", "x axis")
-            .attr("transform", "translate(" + margin.left + "," + height + ")")
-            .attr("text", "weight")
+            .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
             .call(d3.axisBottom(xAxis));
 
     // Add the Y Axis
     svg.append("g")
             .attr("class", "y axis")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("text", "mpg")
-            .attr("transform", "translate(" + margin.left + ",0)")
             .call(d3.axisLeft(yAxis));
+
+    svg.append("text")
+            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+            .attr("transform", "translate(" + (margin.left) + "," + (height / 2) + ")rotate(-90)")  // centre below axis
+            .text("MPG");
+
+
+    svg.append("text")
+            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
+            .attr("transform", "translate(" + (width / 2) + "," + (height + margin.top) + ")")  // centre below axis
+            .text("Weight");
 }
 
 function displayInfo(d) {
+    modal.style.display = "block";
     var nameSpan = document.getElementById("car_name");
     var weightSpan = document.getElementById("car_weight");
     var mpgSpan = document.getElementById("car_mpg");
@@ -169,4 +201,6 @@ function displayInfo(d) {
     originSpan.innerHTML = d.origin;
 }
 
-init();
+window.onload = function () {
+    init();
+};

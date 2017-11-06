@@ -13,47 +13,57 @@
         <script src="node_modules/d3-scale-chromatic/build/d3-scale-chromatic.min.js" type="text/javascript"></script>
         <script src="js/cars.js" type="text/javascript"></script>
         <div id="svg_container"></div>
-        <div id="car_info">
-            <table>
-                <tbody>
-                    <tr>
-                        <td>Name:</td>
-                        <td><span id="car_name"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Origin:</td>
-                        <td><span id="car_origin">####</span></td>
-                    </tr>
-                    <tr>
-                        <td>Weight:</td>
-                        <td><span id="car_weight">####</span></td>
-                    </tr>
-                    <tr>
-                        <td>MPG:</td>
-                        <td><span id="car_mpg">####</span></td>
-                    </tr>
-                    <tr>
-                        <td>Acceleration:</td>
-                        <td><span id="car_acceleration">####</span></td>
-                    </tr>
-                    <tr>
-                        <td>Cylinders:</td>
-                        <td><span id="car_cylinders">####</span></td>
-                    </tr>
-                    <tr>
-                        <td>Displacement:</td>
-                        <td><span id="car_displacement">####</span></td>
-                    </tr>
-                    <tr>
-                        <td>HP:</td>
-                        <td><span id="car_horsepower">####</span></td>
-                    </tr>
-                    <tr>
-                        <td>Year:</td>
-                        <td><span id="car_year">####</span></td>
-                    </tr>
-                </tbody>
-            </table>
+
+        <!-- The Modal -->
+        <div id="car_info" class="modal">
+            <!-- Modal content -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close">&times;</span>
+                    <h2><span id="car_name">#####</span></h2>
+                </div>
+                <div class="modal-body">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Origin:</td>
+                                <td><span id="car_origin">####</span></td>
+                            </tr>
+                            <tr>
+                                <td>Weight:</td>
+                                <td><span id="car_weight">####</span></td>
+                            </tr>
+                            <tr>
+                                <td>MPG:</td>
+                                <td><span id="car_mpg">####</span></td>
+                            </tr>
+                            <tr>
+                                <td>Acceleration:</td>
+                                <td><span id="car_acceleration">####</span></td>
+                            </tr>
+                            <tr>
+                                <td>Cylinders:</td>
+                                <td><span id="car_cylinders">####</span></td>
+                            </tr>
+                            <tr>
+                                <td>Displacement:</td>
+                                <td><span id="car_displacement">####</span></td>
+                            </tr>
+                            <tr>
+                                <td>HP:</td>
+                                <td><span id="car_horsepower">####</span></td>
+                            </tr>
+                            <tr>
+                                <td>Year:</td>
+                                <td><span id="car_year">####</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <h3>Cars Data</h3>
+                </div>
+            </div>
         </div>
     </body>
 </html>
