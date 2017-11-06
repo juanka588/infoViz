@@ -169,5 +169,4 @@ function displayInfo(d) {
     originSpan.innerHTML = d.origin;
 }
 
-
 init();

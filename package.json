@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "homeworks and project for information visualization",
   "main": "index.js",
-  "scripts": {"start":"node main.js",
+  "scripts": {
+    "start": "node node_modules/http-server/bin/http-server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -15,6 +16,7 @@
   "license": "ISC",
   "dependencies": {
     "d3-scale-chromatic": "^1.1.1",
-    "d3-tip": "^0.7.1"
+    "d3-tip": "^0.7.1",
+    "http-server": "^0.10.0"
   }
 }
