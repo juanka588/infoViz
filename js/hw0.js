@@ -20,10 +20,8 @@ d3.tsv("./data/anscombe.tsv", function (error, data) {
     if (error)
         throw error;
     var dataS = data.sort(function (a, b) {
-        return +a.x - +b.x;
+        return parseFloat(a.x) - parseFloat(b.x);
     });
-
-
     console.log(dataS);
     for (var k in divs) {
         var div = divs[k];
@@ -79,7 +77,7 @@ function createGraph(data, k) {
             .attr("height", height + margin.top + margin.bottom);
     var g = svg.append("g")
             .attr("transform", "translate(" + margin.left + ",0)");
-    
+
     data.forEach(function (d) {
         d.x = +d.x;
         d.y = +d.y;

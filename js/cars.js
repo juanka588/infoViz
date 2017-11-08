@@ -1,8 +1,11 @@
 let MARK_SIZE = 60;
 
-let margin = {top: 30, right: 20, bottom: 30, left: 50},
-        width = 800 - margin.left - margin.right,
-        height = 600 - margin.top - margin.bottom;
+let margin = {top: 20, right: 20, bottom: 20, left: 20};
+let padding = {top: 0, right: 150, bottom: 80, left: 60};
+let width = 800;
+let height = 600;
+let graphWidth = width - margin.left - margin.right - padding.left - padding.right;
+let graphHeight = height - margin.top - margin.bottom - padding.top - padding.bottom;
 
 
 var modal = null;
@@ -12,6 +15,11 @@ var span = null;
 var div = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
+
+let fixedSize = MARK_SIZE / 15.5;
+let symbolSympleCross = function (size) {
+    return  "M -" + size + ",0 L " + size + ",0 M 0,-" + size + " L 0," + size;
+};
 
 function init() {
     addModalLogic();
@@ -51,61 +59,71 @@ function addModalLogic() {
 
 function prepareSVG(data) {
     // Set the ranges
-    var xAxis = d3.scaleLinear().rangeRound([0, width]).nice();
-    var yAxis = d3.scaleLinear().rangeRound([height, 0]).nice();
-
+    var xAxis = d3.scaleLinear().rangeRound([0, graphWidth]);
+    var yAxis = d3.scaleLinear().rangeRound([graphHeight, 0]);
+    var colorAxis = d3.scaleSequential(d3.interpolateBlues)
+            .domain(d3.extent(data, function (d) {
+                return  d.year;
+            })).nice();
 
 //    xAxis.domain(d3.extent(data, function (d) {
 //        return  d.weight;
-//    }));
+//    })).nice();
 
-    xAxis.domain([1500, 5500]);
+    xAxis.domain([1500, 5500]).nice();
 
 //    yAxis.domain(d3.extent(data, function (d) {
 //        return  d.mpg;
-//    }));
-    yAxis.domain([5, 50]);
+//    })).nice();
+    yAxis.domain([5, 50]).nice();
 
     // Adds the svg canvas
     var svg = d3.select("#svg_container")
             .append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom);
+            .attr("width", width)
+            .attr("height", height);
     var g = svg.append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-    showAxis(svg, xAxis, yAxis);
+            .attr("transform", "translate("
+                    + (margin.left + padding.left)
+                    + ","
+                    + (margin.top + padding.top)
+                    + ")");
 
+    showAxis(svg, xAxis, yAxis);
+//    showDebug(svg, g);
     //add points
     var symbolsMap = [
         {
-            k: "Europe"
-            , s: d3.symbol()
+            k: "Europe",
+            s: d3.symbol()
                     .size(function (d) {
                         return MARK_SIZE;
                     })
                     .type(function (d) {
                         return d3.symbolCircle;
-                    })},
+                    })
+        },
         {
-            k: "Japan"
-            , s: d3.symbol()
+            k: "Japan",
+            s: d3.symbol()
                     .size(function (d) {
                         return MARK_SIZE;
                     })
                     .type(function (d) {
                         return d3.symbolSquare;
-                    })},
+                    })
+        },
         {
             k: "USA",
-            s: "M -4,0 L 4,0 M 0,-4 L 0,4"
+            s: symbolSympleCross(fixedSize),
         },
     ];
     symbolsMap.forEach(function (item) {
-        displayItem(item, g, data, xAxis, yAxis);
+        displayItem(item, g, data, xAxis, yAxis, colorAxis);
     });
+    addLegend(svg, colorAxis);
 }
-function displayItem(e, g, data, xAxis, yAxis) {
-    var blues = d3.scaleSequential(d3.interpolateBlues).domain([1950, 1980]);
+function displayItem(e, g, data, xAxis, yAxis, colorAxis) {
     var displayElement = g.selectAll("g")
             .data(data)
             .enter()
@@ -118,7 +136,7 @@ function displayItem(e, g, data, xAxis, yAxis) {
             })
             .attr("class", "country " + e.k)
             .style("stroke", function (d) {
-                return blues(d.year);
+                return colorAxis(d.year);
             })
             .style("fill", function () {
                 return "transparent";
@@ -130,6 +148,7 @@ function displayItem(e, g, data, xAxis, yAxis) {
 
 function addListeners(element) {
     element.on("click", function (d) {
+        modal.style.display = "block";
         displayInfo(d);
     })
             .on('mouseover', function (d) {
@@ -154,32 +173,94 @@ function addListeners(element) {
 
 function showAxis(svg, xAxis, yAxis) {
     // Add the X Axis
-    svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
-            .call(d3.axisBottom(xAxis));
-
+    addBottomAxis(svg, xAxis, "Weight");
     // Add the Y Axis
+    addLeftAxis(svg, yAxis, "MPG");
+}
+
+function addLeftAxis(svg, yAxis, title) {
     svg.append("g")
             .attr("class", "y axis")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .attr("transform", "translate("
+                    + (margin.left + padding.left)
+                    + ","
+                    + (margin.top + padding.top)
+                    + ")")
             .attr("text", "mpg")
             .call(d3.axisLeft(yAxis));
 
     svg.append("text")
-            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-            .attr("transform", "translate(" + (margin.left) + "," + (height / 2) + ")rotate(-90)")  // centre below axis
-            .text("MPG");
-
-
-    svg.append("text")
-            .attr("text-anchor", "middle")  // this makes it easy to centre the text as the transform is applied to the anchor
-            .attr("transform", "translate(" + (width / 2) + "," + (height + margin.top) + ")")  // centre below axis
-            .text("Weight");
+            .attr("text-anchor", "middle")
+            .attr("transform", "translate("
+                    + (margin.left + padding.left / 2)
+                    + ","
+                    + (graphHeight / 2 + margin.top + padding.top)
+                    + ")rotate(-90)")
+            .text(title);
 }
 
+function addBottomAxis(svg, xAxis, title) {
+    svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate("
+                    + (margin.left + padding.left)
+                    + ","
+                    + (graphHeight + padding.top + margin.top)
+                    + ")")
+            .call(d3.axisBottom(xAxis));
+    svg.append("text")
+            .attr("text-anchor", "middle")
+            .attr("transform", "translate("
+                    + (graphWidth / 2 + margin.left + padding.left)
+                    + ","
+                    + (height - margin.bottom - padding.bottom / 2)
+                    + ")")
+            .text(title);
+}
+
+function addLegend(svg, colorAxis) {
+    let itemHeight = 30;
+    let innerMargin = {left: 20, top: 10};
+    let elements = getLeyendElements(colorAxis);
+    for (var i = 0; i < elements.length; i++) {
+        var markWidth = 20;
+        var x = (width - margin.right - padding.right + innerMargin.left);
+        var y = (margin.top + padding.top + innerMargin.top + itemHeight * i);
+        if (elements[i].mark != null) {
+            svg.append("path")
+                    .attr("transform", function () {
+                        return "translate(" + x + "," + (y - 5) + ")";
+                    })
+                    .style("stroke", "black")
+                    .style("fill", function () {
+                        return elements[i].color;
+                    })
+                    .attr("d", elements[i].mark);
+            x = x + markWidth;
+        }
+        svg.append("text")
+                .attr("transform", "translate(" + x + "," + y + ")")
+                .text(elements[i].label);
+    }
+}
+function getLeyendElements(colorAxis) {
+    let elements = [
+        {label: "Origin", mark: null},
+        {label: "Europe", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolCircle), color: "black"},
+        {label: "Japan", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolSquare), color: "black"},
+        {label: "USA", mark: symbolSympleCross(fixedSize), color: "black"},
+        {label: "Year", mark: null}
+    ];
+    for (var i = 0; i < 10; i++) {
+        elements.push({
+            label: "7" + i,
+            mark: d3.symbol().size(MARK_SIZE * 2).type(d3.symbolSquare),
+            color: colorAxis(1970 + i)
+        });
+    }
+    return elements;
+}
 function displayInfo(d) {
-    modal.style.display = "block";
     var nameSpan = document.getElementById("car_name");
     var weightSpan = document.getElementById("car_weight");
     var mpgSpan = document.getElementById("car_mpg");
@@ -199,6 +280,26 @@ function displayInfo(d) {
     hpSpan.innerHTML = d.horsepower;
     yearSpan.innerHTML = d.year;
     originSpan.innerHTML = d.origin;
+}
+
+function showDebug(svg, g) {
+    svg.attr("class", "debug");
+    svg.append("rect")
+            .attr("x", margin.left)
+            .attr("y", margin.top)
+            .attr("width", width - margin.left - margin.right)
+            .attr("height", height - margin.top - margin.bottom)
+            .attr("fill", "#FF000000")
+            .attr("fill-opacity", "0.3")
+            ;
+    g.append("rect")
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", graphWidth)
+            .attr("height", graphHeight)
+            .attr("fill", "red")
+            .attr("fill-opacity", "0.3")
+            ;
 }
 
 window.onload = function () {
