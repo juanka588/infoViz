@@ -1,0 +1,6 @@
+projectKey=my:infoViz
+serverUrl=http://localhost:9000
+serverVersion=6.4.0.25310
+dashboardUrl=http://localhost:9000/dashboard/index/my:infoViz
+ceTaskId=AV-hJ0WzTpu-lAYCpnUb
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AV-hJ0WzTpu-lAYCpnUb

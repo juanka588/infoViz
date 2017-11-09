@@ -1,10 +1,8 @@
-
-var body = d3.select("body");
 var divs = {
-    '1': body.append('div'),
-    '2': body.append('div'),
-    '3': body.append('div'),
-    '4': body.append('div'),
+    '1': d3.select('.ds1'),
+    '2': d3.select('.ds2'),
+    '3': d3.select('.ds3'),
+    '4': d3.select('.ds4'),
 };
 
 var s = d3.formatSpecifier("f");
@@ -71,7 +69,7 @@ function createGraph(data, k) {
     var xAxis = d3.scaleLinear().rangeRound([0, width]);
     var yAxis = d3.scaleLinear().rangeRound([height, 0]);
 // Adds the svg canvas
-    var svg = d3.select("body")
+    var svg = d3.select("#svg_container" + k)
             .append("svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
@@ -108,11 +106,7 @@ function createGraph(data, k) {
 
     g.append("path")
             .datum(data)
-            .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-width", 1.5)
+            .attr("class", "line")
             .attr("d", line);
 
     g.selectAll("circle")
@@ -156,6 +150,4 @@ function createGraph(data, k) {
                 return "observation: " + d.observation;
             })
             ;
-
-
 }

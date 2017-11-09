@@ -7,25 +7,6 @@ and open the template in the editor.
     Created on : 28/10/2017, 06:22:18 PM
     Author     : JuanCamilo
 */
-
-body  { 
-    margin: 30px 50px; font-family: sans-serif; 
-}
-div   { 
-    float: left; margin: 10px; 
-}
-div.tooltip {	
-    position: absolute;			
-    text-align: center;			
-    width: 60px;					
-    height: 28px;					
-    padding: 2px;				
-    font: 12px sans-serif;		
-    background: lightsteelblue;	
-    border: 0px;		
-    border-radius: 8px;			
-    pointer-events: none;			
-}
 table { 
     border: 1px solid black; width: 12em;
 }
@@ -56,4 +37,15 @@ circle.dots3{
 
 circle.dots4{
     fill: gold;
+}
+.line{
+    fill: none;
+    stroke:steelblue;
+    stroke-linejoin:round;
+    stroke-linecap:round;
+    stroke-width:1.5;
+}
+.ds1,.ds2,.ds3,.ds4{ 
+    margin: 10px; 
+    display: inline-block;
 }

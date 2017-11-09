@@ -12,7 +12,7 @@ var modal = null;
 var span = null;
 
 // Define the div for the tooltip
-var div = d3.select("body").append("div")
+var tooltipDiv = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
 
@@ -23,7 +23,6 @@ let symbolSympleCross = function (size) {
 
 function init() {
     addModalLogic();
-
     d3.tsv("./data/cars.tsv", function (error, data) {
         if (error)
             throw error;
@@ -152,16 +151,17 @@ function addListeners(element) {
         displayInfo(d);
     })
             .on('mouseover', function (d) {
-                div.transition()
+                tooltipDiv.transition()
                         .duration(200)
                         .style("opacity", .9);
-                div.html("weight: " + d.weight + "<br>mpg: " + d.mpg)
+                tooltipDiv.html("<span class='axis-title'>Weight: </span> " + d.weight
+                        + "<br /><span class='axis-title'>MPG: </span>" + d.mpg)
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
 
             })
             .on('mouseout', function () {
-                div.transition()
+                tooltipDiv.transition()
                         .duration(500)
                         .style("opacity", 0);
             })
@@ -191,6 +191,7 @@ function addLeftAxis(svg, yAxis, title) {
 
     svg.append("text")
             .attr("text-anchor", "middle")
+            .attr("class", "axis-title")
             .attr("transform", "translate("
                     + (margin.left + padding.left / 2)
                     + ","
@@ -210,6 +211,7 @@ function addBottomAxis(svg, xAxis, title) {
             .call(d3.axisBottom(xAxis));
     svg.append("text")
             .attr("text-anchor", "middle")
+            .attr("class", "axis-title")
             .attr("transform", "translate("
                     + (graphWidth / 2 + margin.left + padding.left)
                     + ","
@@ -227,34 +229,40 @@ function addLegend(svg, colorAxis) {
         var x = (width - margin.right - padding.right + innerMargin.left);
         var y = (margin.top + padding.top + innerMargin.top + itemHeight * i);
         if (elements[i].mark != null) {
-            svg.append("path")
-                    .attr("transform", function () {
-                        return "translate(" + x + "," + (y - 5) + ")";
-                    })
-                    .style("stroke", "black")
-                    .style("fill", function () {
-                        return elements[i].color;
-                    })
+            let path = svg.append("path");
+            path.attr("transform", function () {
+                return "translate(" + x + "," + (y - 5) + ")";
+            })
+                    .attr("class", elements[i].class)
                     .attr("d", elements[i].mark);
+            if (elements[i].class === "fixed-color") {
+                path.attr("fill", elements[i].color);
+            }
             x = x + markWidth;
         }
-        svg.append("text")
-                .attr("transform", "translate(" + x + "," + y + ")")
+        let txt = svg.append("text");
+        txt.attr("transform", "translate(" + x + "," + y + ")")
                 .text(elements[i].label);
+        if (elements[i].mark == null) {
+            txt.attr("class", "axis-title");
+        }
     }
 }
+
+
 function getLeyendElements(colorAxis) {
     let elements = [
         {label: "Origin", mark: null},
-        {label: "Europe", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolCircle), color: "black"},
-        {label: "Japan", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolSquare), color: "black"},
-        {label: "USA", mark: symbolSympleCross(fixedSize), color: "black"},
+        {label: "Europe", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolCircle), class: "legend-symbol"},
+        {label: "Japan", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolSquare), class: "legend-symbol"},
+        {label: "USA", mark: symbolSympleCross(fixedSize), class: "legend-symbol"},
         {label: "Year", mark: null}
     ];
     for (var i = 0; i < 10; i++) {
         elements.push({
             label: "7" + i,
             mark: d3.symbol().size(MARK_SIZE * 2).type(d3.symbolSquare),
+            class: "fixed-color",
             color: colorAxis(1970 + i)
         });
     }
