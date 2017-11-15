@@ -12,9 +12,7 @@ var modal = null;
 var span = null;
 
 // Define the div for the tooltip
-var tooltipDiv = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+var tooltipDiv = null;
 
 let fixedSize = MARK_SIZE / 15.5;
 let symbolSympleCross = function (size) {
@@ -22,6 +20,10 @@ let symbolSympleCross = function (size) {
 };
 
 function init() {
+    tooltipDiv = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
     addModalLogic();
     d3.tsv("./data/cars.tsv", function (error, data) {
         if (error)
@@ -60,11 +62,12 @@ function prepareSVG(data) {
     // Set the ranges
     var xAxis = d3.scaleLinear().rangeRound([0, graphWidth]);
     var yAxis = d3.scaleLinear().rangeRound([graphHeight, 0]);
-    var colorAxis = d3.scaleSequential(d3.interpolateBlues)
-            .domain(d3.extent(data, function (d) {
-                return  d.year;
-            })).nice();
+    var colorAxis = d3.scaleSequential(d3.interpolateBlues);
 
+//    colorAxis.domain(d3.extent(data, function (d) {
+//        return  d.year;
+//    })).nice();
+    colorAxis.domain([1965, 1985]).nice();
 //    xAxis.domain(d3.extent(data, function (d) {
 //        return  d.weight;
 //    })).nice();

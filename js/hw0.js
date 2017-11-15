@@ -1,65 +1,76 @@
-var divs = {
-    '1': d3.select('.ds1'),
-    '2': d3.select('.ds2'),
-    '3': d3.select('.ds3'),
-    '4': d3.select('.ds4'),
-};
+var divs = null;
 
-var s = d3.formatSpecifier("f");
-s.precision = d3.precisionFixed(0.01);
-var f = d3.format(s);
+var s = null;
+var f = null;
 
 // Define the div for the tooltip
-var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+var div = null;
 
-d3.tsv("./data/anscombe.tsv", function (error, data) {
-    if (error)
-        throw error;
-    var dataS = data.sort(function (a, b) {
-        return parseFloat(a.x) - parseFloat(b.x);
+function init() {
+    divs = {
+        '1': d3.select('.ds1'),
+        '2': d3.select('.ds2'),
+        '3': d3.select('.ds3'),
+        '4': d3.select('.ds4'),
+    };
+
+    s = d3.formatSpecifier("f");
+    s.precision = d3.precisionFixed(0.01);
+    f = d3.format(s);
+
+// Define the div for the tooltip
+    div = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+
+    d3.tsv("./data/anscombe.tsv", function (error, data) {
+        if (error)
+            throw error;
+        var dataS = data.sort(function (a, b) {
+            return parseFloat(a.x) - parseFloat(b.x);
+        });
+        console.log(dataS);
+        for (var k in divs) {
+            var div = divs[k];
+            var table = div.append('table');
+            table.append('caption')
+                    .text('data set ' + k);
+
+            var header = table.append('tr');
+            header.append('th')
+                    .text('observation');
+            header.append('th')
+                    .text('x');
+            header.append('th')
+                    .text('y');
+
+            var row = table.selectAll('row')
+                    .data(dataS)
+                    .enter().filter(function (d) {
+                return d.dataset == k;
+            }).append('tr');
+
+            row.append('td')
+                    .text(function (d) {
+                        return d.observation;
+                    });
+
+            row.append('td')
+                    .text(function (d) {
+                        return d.x;
+                    });
+
+            row.append('td')
+                    .text(function (d) {
+                        return f(d.y);
+                    });
+
+            createGraph(dataS, k);
+        }
+        ;
     });
-    console.log(dataS);
-    for (var k in divs) {
-        var div = divs[k];
-        var table = div.append('table');
-        table.append('caption')
-                .text('data set ' + k);
-
-        var header = table.append('tr');
-        header.append('th')
-                .text('observation');
-        header.append('th')
-                .text('x');
-        header.append('th')
-                .text('y');
-
-        var row = table.selectAll('row')
-                .data(dataS)
-                .enter().filter(function (d) {
-            return d.dataset == k;
-        }).append('tr');
-
-        row.append('td')
-                .text(function (d) {
-                    return d.observation;
-                });
-
-        row.append('td')
-                .text(function (d) {
-                    return d.x;
-                });
-
-        row.append('td')
-                .text(function (d) {
-                    return f(d.y);
-                });
-
-        createGraph(dataS, k);
-    }
-    ;
-});
+}
 
 function createGraph(data, k) {
     var margin = {top: 30, right: 20, bottom: 30, left: 50},
@@ -151,3 +162,7 @@ function createGraph(data, k) {
             })
             ;
 }
+
+window.onload = function () {
+    init();
+};
