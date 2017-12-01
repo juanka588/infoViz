@@ -7,10 +7,9 @@ let height = 600;
 let graphWidth = width - margin.left - margin.right - padding.left - padding.right;
 let graphHeight = height - margin.top - margin.bottom - padding.top - padding.bottom;
 
-
 var modal = null;
 var span = null;
-
+var g=null;
 // Define the div for the tooltip
 var tooltipDiv = null;
 
@@ -84,7 +83,7 @@ function prepareSVG(data) {
             .append("svg")
             .attr("width", width)
             .attr("height", height);
-    var g = svg.append("g")
+    g = svg.append("g")
             .attr("transform", "translate("
                     + (margin.left + padding.left)
                     + ","
@@ -92,6 +91,9 @@ function prepareSVG(data) {
                     + ")");
 
     showAxis(svg, xAxis, yAxis);
+    svg.call(d3.zoom()
+            .scaleExtent([1 / 2, 8])
+            .on("zoom", zoomed));
 //    showDebug(svg, g);
     //add points
     var symbolsMap = [
@@ -148,6 +150,10 @@ function displayItem(e, g, data, xAxis, yAxis, colorAxis) {
 }
 
 
+
+function zoomed() {
+    g.attr("transform",d3.zoomIdentity);
+}
 function addListeners(element) {
     element.on("click", function (d) {
         modal.style.display = "block";
