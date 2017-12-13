@@ -1,15 +1,7 @@
 let MARK_SIZE = 60;
 
-let margin = {top: 20, right: 20, bottom: 20, left: 20};
-let padding = {top: 0, right: 150, bottom: 80, left: 60};
-let width = 800;
-let height = 600;
-let graphWidth = width - margin.left - margin.right - padding.left - padding.right;
-let graphHeight = height - margin.top - margin.bottom - padding.top - padding.bottom;
-
 var modal = null;
 var span = null;
-var g = null;
 // Define the div for the tooltip
 var tooltipDiv = null;
 
@@ -104,7 +96,7 @@ function prepareSVG(data) {
     symbolsMap.forEach(function (item) {
         displayItem(item, svgHolder.mainGroup, data, xAxis, yAxis, colorAxis);
     });
-    addLegend(svgHolder.svg, colorAxis);
+    addLegend(svgHolder, colorAxis);
 }
 function displayItem(e, g, data, xAxis, yAxis, colorAxis) {
     var displayElement = g.selectAll("g")
@@ -163,16 +155,16 @@ function showAxis(svgHolder, xAxis, yAxis) {
     svgHolder.addLeftAxis(yAxis, "MPG");
 }
 
-function addLegend(svg, colorAxis) {
+function addLegend(svgHolder, colorAxis) {
     let itemHeight = 30;
     let innerMargin = {left: 20, top: 10};
     let elements = getLeyendElements(colorAxis);
     for (var i = 0; i < elements.length; i++) {
         var markWidth = 20;
-        var x = (width - margin.right - padding.right + innerMargin.left);
-        var y = (margin.top + padding.top + innerMargin.top + itemHeight * i);
+        var x = (svgHolder.width - svgHolder.getRight()) + innerMargin.left;
+        var y = (svgHolder.getTop() + innerMargin.top + itemHeight * i);
         if (elements[i].mark != null) {
-            let path = svg.append("path");
+            let path = svgHolder.svg.append("path");
             path.attr("transform", function () {
                 return "translate(" + x + "," + (y - 5) + ")";
             })
@@ -183,7 +175,7 @@ function addLegend(svg, colorAxis) {
             }
             x = x + markWidth;
         }
-        let txt = svg.append("text");
+        let txt = svgHolder.svg.append("text");
         txt.attr("transform", "translate(" + x + "," + y + ")")
                 .text(elements[i].label);
         if (elements[i].mark == null) {
