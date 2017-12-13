@@ -1,6 +1,12 @@
-function SVGHolder(width = 800, height = 600, containerID = "#svg_container") {
-    this.margin = {top: 20, right: 20, bottom: 20, left: 20};
-    this.padding = {top: 0, right: 150, bottom: 80, left: 60};
+function SVGHolder(
+        width = 800
+        , height = 600
+        , containerID = "#svg_container"
+        , margin = {top: 20, right: 20, bottom: 20, left: 20}
+        , padding = {top: 0, right: 150, bottom: 80, left: 60}
+) {
+    this.margin = margin;
+    this.padding = padding;
     this.width = width;
     this.height = height;
     this.graphWidth = this.width - this.margin.left - this.margin.right - this.padding.left - this.padding.right;
