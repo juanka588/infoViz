@@ -9,7 +9,7 @@ let graphHeight = height - margin.top - margin.bottom - padding.top - padding.bo
 
 var modal = null;
 var span = null;
-var g=null;
+var g = null;
 // Define the div for the tooltip
 var tooltipDiv = null;
 
@@ -23,7 +23,7 @@ function init() {
             .attr("class", "tooltip")
             .style("opacity", 0);
 
-    addModalLogic();
+    addModalLogic('car_info');
     d3.tsv("./data/cars.tsv", function (error, data) {
         if (error)
             throw error;
@@ -44,8 +44,10 @@ function init() {
         prepareSVG(data);
     });
 }
-function addModalLogic() {
-    modal = document.getElementById('car_info');
+
+
+function addModalLogic(modalId) {
+    modal = document.getElementById(modalId);
     span = document.getElementsByClassName("close")[0];
     span.onclick = function () {
         modal.style.display = "none";
@@ -58,43 +60,20 @@ function addModalLogic() {
 }
 
 function prepareSVG(data) {
-    // Set the ranges
-    var xAxis = d3.scaleLinear().rangeRound([0, graphWidth]);
-    var yAxis = d3.scaleLinear().rangeRound([graphHeight, 0]);
+    var svgHolder = new SVGHolder(800, 600);
+
+    var xAxis = d3.scaleLinear().rangeRound([0, svgHolder.graphWidth]);
+    var yAxis = d3.scaleLinear().rangeRound([svgHolder.graphHeight, 0]);
     var colorAxis = d3.scaleSequential(d3.interpolateBlues);
 
-//    colorAxis.domain(d3.extent(data, function (d) {
-//        return  d.year;
-//    })).nice();
     colorAxis.domain([1965, 1985]).nice();
-//    xAxis.domain(d3.extent(data, function (d) {
-//        return  d.weight;
-//    })).nice();
 
     xAxis.domain([1500, 5500]).nice();
 
-//    yAxis.domain(d3.extent(data, function (d) {
-//        return  d.mpg;
-//    })).nice();
     yAxis.domain([5, 50]).nice();
 
-    // Adds the svg canvas
-    var svg = d3.select("#svg_container")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
-    g = svg.append("g")
-            .attr("transform", "translate("
-                    + (margin.left + padding.left)
-                    + ","
-                    + (margin.top + padding.top)
-                    + ")");
+    showAxis(svgHolder, xAxis, yAxis);
 
-    showAxis(svg, xAxis, yAxis);
-    svg.call(d3.zoom()
-            .scaleExtent([1 / 2, 8])
-            .on("zoom", zoomed));
-//    showDebug(svg, g);
     //add points
     var symbolsMap = [
         {
@@ -123,9 +102,9 @@ function prepareSVG(data) {
         },
     ];
     symbolsMap.forEach(function (item) {
-        displayItem(item, g, data, xAxis, yAxis, colorAxis);
+        displayItem(item, svgHolder.mainGroup, data, xAxis, yAxis, colorAxis);
     });
-    addLegend(svg, colorAxis);
+    addLegend(svgHolder.svg, colorAxis);
 }
 function displayItem(e, g, data, xAxis, yAxis, colorAxis) {
     var displayElement = g.selectAll("g")
@@ -149,11 +128,10 @@ function displayItem(e, g, data, xAxis, yAxis, colorAxis) {
     addListeners(displayElement);
 }
 
-
-
 function zoomed() {
-    g.attr("transform",d3.zoomIdentity);
+    g.attr("transform", d3.zoomIdentity);
 }
+
 function addListeners(element) {
     element.on("click", function (d) {
         modal.style.display = "block";
@@ -180,53 +158,9 @@ function addListeners(element) {
             });
 }
 
-function showAxis(svg, xAxis, yAxis) {
-    // Add the X Axis
-    addBottomAxis(svg, xAxis, "Weight");
-    // Add the Y Axis
-    addLeftAxis(svg, yAxis, "MPG");
-}
-
-function addLeftAxis(svg, yAxis, title) {
-    svg.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate("
-                    + (margin.left + padding.left)
-                    + ","
-                    + (margin.top + padding.top)
-                    + ")")
-            .attr("text", "mpg")
-            .call(d3.axisLeft(yAxis));
-
-    svg.append("text")
-            .attr("text-anchor", "middle")
-            .attr("class", "axis-title")
-            .attr("transform", "translate("
-                    + (margin.left + padding.left / 2)
-                    + ","
-                    + (graphHeight / 2 + margin.top + padding.top)
-                    + ")rotate(-90)")
-            .text(title);
-}
-
-function addBottomAxis(svg, xAxis, title) {
-    svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate("
-                    + (margin.left + padding.left)
-                    + ","
-                    + (graphHeight + padding.top + margin.top)
-                    + ")")
-            .call(d3.axisBottom(xAxis));
-    svg.append("text")
-            .attr("text-anchor", "middle")
-            .attr("class", "axis-title")
-            .attr("transform", "translate("
-                    + (graphWidth / 2 + margin.left + padding.left)
-                    + ","
-                    + (height - margin.bottom - padding.bottom / 2)
-                    + ")")
-            .text(title);
+function showAxis(svgHolder, xAxis, yAxis) {
+    svgHolder.addBottomAxis(xAxis, "Weight");
+    svgHolder.addLeftAxis(yAxis, "MPG");
 }
 
 function addLegend(svg, colorAxis) {
@@ -297,26 +231,6 @@ function displayInfo(d) {
     hpSpan.innerHTML = d.horsepower;
     yearSpan.innerHTML = d.year;
     originSpan.innerHTML = d.origin;
-}
-
-function showDebug(svg, g) {
-    svg.attr("class", "debug");
-    svg.append("rect")
-            .attr("x", margin.left)
-            .attr("y", margin.top)
-            .attr("width", width - margin.left - margin.right)
-            .attr("height", height - margin.top - margin.bottom)
-            .attr("fill", "#FF000000")
-            .attr("fill-opacity", "0.3")
-            ;
-    g.append("rect")
-            .attr("x", 0)
-            .attr("y", 0)
-            .attr("width", graphWidth)
-            .attr("height", graphHeight)
-            .attr("fill", "red")
-            .attr("fill-opacity", "0.3")
-            ;
 }
 
 window.onload = function () {
