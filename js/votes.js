@@ -31,23 +31,73 @@ function onDataLoaded(error, data) {
 
 function prepareSVG(data) {
     var svgHolder = new SVGHolder(800, 600);
-    svgHolder.showDebug();
-    var xAxis = d3.scaleLinear().rangeRound([0, svgHolder.graphWidth]);
+//    svgHolder.showDebug();
+    var xAxis = d3.scaleBand()
+            .rangeRound([0, svgHolder.graphWidth])
+            .paddingInner(0.05)
+            .align(0.1);
+
     var yAxis = d3.scaleLinear().rangeRound([svgHolder.graphHeight, 0]);
     var colorAxis = d3.scaleSequential(d3.interpolateBlues);
 
-    colorAxis.domain([1965, 1985]).nice();
+    colorAxis.domain([0, data.length]).nice();
 
-    xAxis.domain([1500, 5500]).nice();
+    xAxis.domain(data.map(function (d) {
+        return d.VOTE;
+    }));
 
-    yAxis.domain([5, 50]).nice();
+    yAxis.domain([0, data.length]).nice();
 
     showAxis(svgHolder, xAxis, yAxis);
+
+    showItems(svgHolder, data, xAxis, yAxis, colorAxis);
+}
+
+function showItems(svgHolder, data, xAxis, yAxis, colorAxis) {
+    var filteredData = data.filter(function (d) {
+        return true;
+    });
+    var groups = d3.nest()
+            .key(function (d) {
+                return d["VOTE"];
+            })
+            .rollup(function (v) {
+                return v.length;
+            })
+            .entries(filteredData);
+    console.log(groups);
+    var g = [
+        {count: 15, women: 15, group_by: "EM"}
+        , {count: 15, women: 85, group_by: "EM"}
+        , {count: 40, women: 35, group_by: "JL"}
+        , {count: 40, women: 12, group_by: "JL"}
+    ];
+    var series = d3.stack().keys(["value"])(groups);
+    svgHolder.mainGroup
+            .selectAll("g")
+            .data(series)
+            .enter()
+            .selectAll("rect")
+            .data(function (d) {
+                return d;
+            })
+            .enter().append("rect")
+            .attr("fill", function (d) {
+                return colorAxis(1000);
+            })
+            .attr("height", function (d) {
+                return yAxis(d[0]) - yAxis(d[1]);
+            })
+            .attr("width", xAxis.bandwidth())
+            .attr("transform", function (d) {
+                return "translate(" + xAxis(d.data["key"]) + "," + yAxis(d[1]) + "),rotate(0)";
+            });
+
 }
 
 function showAxis(svgHolder, xAxis, yAxis) {
-    svgHolder.addBottomAxis(xAxis, "Weight");
-    svgHolder.addLeftAxis(yAxis, "MPG");
+    svgHolder.addBottomAxis(xAxis, "Candidates");
+    svgHolder.addLeftAxis(yAxis, "Votes");
 }
 
 function getCandidatesMap() {

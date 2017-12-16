@@ -35,7 +35,7 @@ function SVGHolder(
                 .attr("y", this.margin.top)
                 .attr("width", this.width - this.margin.left - this.margin.right)
                 .attr("height", this.height - this.margin.top - this.margin.bottom)
-                .attr("fill", "#FF000000")
+                .attr("fill", "blue")
                 .attr("fill-opacity", "0.3")
                 ;
         this.mainGroup.append("rect")
