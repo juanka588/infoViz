@@ -108,6 +108,17 @@ function SVGHolder(
                 .scaleExtent([1 / 2, 8])
                 .on("zoom", callback));
     };
+    this.addChartTitle = function (title) {
+        this.svg.append("text")
+                .attr("text-anchor", "middle")
+                .attr("class", "axis-title")
+                .attr("transform", "translate("
+                        + (this.graphWidth / 2 + this.getLeft())
+                        + ","
+                        + (this.margin.top + this.padding.top / 2)
+                        + ")")
+                .text(title);
+    };
 
     this.build();
 }

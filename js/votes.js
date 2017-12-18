@@ -2,10 +2,16 @@ let candidatesMap = getCandidatesMap();
 let candidatesKeys =
         ["NDA", "MLP", "EM", "BH", "NA", "PP", "JC", "JL", "JLM", "FA", "FF"];
 
+let mainFilter = null;
+let fieldFilter = "VOTE";
+let parsedData = null;
+
 var tooltipDiv;
+
 window.onload = function () {
     init();
 };
+
 function init() {
     tooltipDiv = d3.select("body").append("div")
             .attr("class", "tooltip")
@@ -30,6 +36,12 @@ function onDataLoaded(error, data) {
     if (error)
         throw error;
     console.log(data);
+    parsedData = data.slice();
+    drawChars(data);
+}
+
+function drawChars(data) {
+    d3.selectAll("svg").remove().exit();
     realVotersSVG(data);
     approvalSVG(data);
     evalSVG(data);
@@ -38,13 +50,21 @@ function onDataLoaded(error, data) {
 function evalSVG(data) {
     var transformData = transformEvalData(data);
     var yDomain = [0, transformData.max];
-    prepareBarChart("#svg_container3", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showRealVoterItems);
+    var title = "Evaluation votes";
+    if (mainFilter !== null) {
+        title += " " + candidatesMap[mainFilter].name;
+    }
+    prepareBarChart(title, "#svg_container3", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showRealVoterItems);
 }
 
 function approvalSVG(data) {
     var transformData = transformApprovalData(data);
     var yDomain = [0, transformData.max];
-    prepareBarChart("#svg_container2", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showRealVoterItems);
+    var title = "Approval votes";
+    if (mainFilter !== null) {
+        title += " " + candidatesMap[mainFilter].name;
+    }
+    prepareBarChart(title, "#svg_container2", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showRealVoterItems);
 }
 
 function realVotersSVG(data) {
@@ -55,7 +75,11 @@ function realVotersSVG(data) {
     var yDomain = [0, d3.max(transformData[0], function (d) {
             return d.data.value;
         })];
-    prepareBarChart("#svg_container1", transformData, xDomain, yDomain, showRealVoterItems);
+    var title = "Real Votes";
+    if (mainFilter !== null) {
+        title += " " + candidatesMap[mainFilter].name;
+    }
+    prepareBarChart(title, "#svg_container1", transformData, xDomain, yDomain, showRealVoterItems);
 }
 
 function transformApprovalData(data) {
@@ -67,7 +91,10 @@ function transformEvalData(data) {
 }
 function transformData(data, prefix) {
     var filteredData = data.filter(function (d) {
-        return true;
+        if (mainFilter === null) {
+            return true;
+        }
+        return d[fieldFilter] === mainFilter;
     });
     var summary = {max: -1, sum: 0};
     var transform = filteredData.reduce(function (acc, d) {
@@ -90,7 +117,10 @@ function transformData(data, prefix) {
 
 function transformRealVotersData(data) {
     var filteredData = data.filter(function (d) {
-        return true;
+        if (mainFilter === null) {
+            return true;
+        }
+        return d[fieldFilter] === mainFilter;
     });
     var groups = d3.nest()
             .key(function (d) {
@@ -106,11 +136,12 @@ function transformRealVotersData(data) {
     return series;
 }
 
-function prepareBarChart(containerID, data, xDomain, yDomain, itemInflater) {
+function prepareBarChart(title, containerID, data, xDomain, yDomain, itemInflater) {
     var svgHolder = new SVGHolder(500, 300, containerID
             , {top: 20, right: 20, bottom: 20, left: 20}
-    , {top: 0, right: 0, bottom: 60, left: 60}
+    , {top: 20, right: 0, bottom: 60, left: 60}
     );
+    svgHolder.addChartTitle(title);
 //    svgHolder.showDebug();
     var xAxis = d3.scaleBand()
             .rangeRound([0, svgHolder.graphWidth])
@@ -175,8 +206,8 @@ function showItems(svgHolder, data, xAxis, yAxis) {
 
 function addListeners(element) {
     element.on("click", function (d) {
-//        modal.style.display = "block";
-//        displayInfo(d);
+        console.log(d);
+        showDetails(d.data.key);
     })
             .on('mouseover', function (d) {
                 tooltipDiv.transition()
@@ -219,10 +250,18 @@ function toArray(obj, properties) {
     return [arr];
 }
 
+function showDetails(id) {
+    mainFilter = id;
+    drawChars(parsedData);
+}
 
 function getCandidatesMap() {
     var map = [];
-    map["NDA"] = {id: "NDA", color: "#0088c6", name: "Nicolas Dupont-Aignan"};
+    map["NDA"] = {
+        id: "NDA",
+        color: "#0088c6",
+        name: "Nicolas Dupont-Aignan"
+    };
     map["MLP"] = {
         id: "MLP",
         color: "#83726d",
