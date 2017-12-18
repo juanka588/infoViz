@@ -31,6 +31,43 @@
             <ul>
                 <li>Juan Camilo Rodr&iacute;guez Dur&aacute;n</li>
             </ul>
+            <div id="controls">
+                <button>Reset</button>
+                <select id="filter_field"></select>
+                <select id="filter_operator">
+                    <option value="eq">=</option>
+                    <option value="neq">!=</option>
+                    <option value="lt">&lt;</option>
+                    <option value="gt">&gt;</option>
+                </select>
+                <input id="filter_value" type="text">
+                <button>Add</button>
+            </div>
+            <div>
+                <span>Active Filters:</span>
+            </div>
+            <div id="active_filters">
+                <div class="badge">
+                    <span class="field">Vote</span>
+                    <span class="operator">=</span>
+                    <span class="value">EM</span><button>X</button>
+                </div>
+                <div class="badge">
+                    <span class="field">Vote</span>
+                    <span class="operator">=</span>
+                    <span class="value">EM</span><button>X</button>
+                </div>
+                <div class="badge">
+                    <span class="field">Vote</span>
+                    <span class="operator">=</span>
+                    <span class="value">EM</span><button>X</button>
+                </div>
+                <div class="badge">
+                    <span class="field">Vote</span>
+                    <span class="operator">=</span>
+                    <span class="value">EM</span><button>X</button>
+                </div>
+            </div>
             <div id="graph-container">
                 <div id="svg_container1"></div>
                 <div id="svg_container2"></div>

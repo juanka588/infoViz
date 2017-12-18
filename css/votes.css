@@ -10,3 +10,24 @@ and open the template in the editor.
 rect:hover{
     stroke:yellow !important;   
 }
+.badge{
+    display: inline-flex;
+    background: yellow;
+    color: gray;
+}
+.badge button:hover{
+    background-color: hsla(120, 100%, 50%, 0.3);
+}
+.badge button{
+    background: transparent;
+    border: none;
+}
+.field{
+    font-weight: bold;
+}
+.operator{
+    color: green;
+}
+.value{
+    color: pink;
+}

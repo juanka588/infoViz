@@ -37,7 +37,23 @@ function onDataLoaded(error, data) {
         throw error;
     console.log(data);
     parsedData = data.slice();
+    var select = d3.select("#filter_field");
+    select.selectAll("option")
+            .data(data.columns)
+            .enter()
+            .insert("option")
+            .attr("value", function (d) {
+                return d;
+            })
+            .text(function (d) {
+                return d;
+            });
+    addControlsListeners();
     drawChars(data);
+}
+
+function addControlsListeners() {
+//TODO: fill the function    
 }
 
 function drawChars(data) {
@@ -87,7 +103,12 @@ function transformApprovalData(data) {
 }
 
 function transformEvalData(data) {
-    return transformData(data, "EV_");
+    var aggregateData = transformData(data, "EV_");
+    var sum = aggregateData.sum;
+    for (var key in aggregateData) {
+        aggregateData[key] = aggregateData[key] / sum;
+    }
+    return aggregateData;
 }
 function transformData(data, prefix) {
     var filteredData = data.filter(function (d) {
