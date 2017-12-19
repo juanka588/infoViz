@@ -53,7 +53,7 @@ function onDataLoaded(error, data) {
 
 function addControlsListeners() {
     d3.select("#reset_btn").on("click", function () {
-        filterList = new FilterList(inflateFilterList);
+        filterList.removeAll();
         drawChars(parsedData);
     });
     var fieldFilter = d3.select("#filter_field");
@@ -77,10 +77,23 @@ function addControlsListeners() {
 
 
 function inflateFilterList(filterList) {
-    console.log("function triggered");
-    console.log(filterList);
+    var filterDiv = d3.select("#active_filters");
+    filterDiv.html("");
+    filterDiv.selectAll("div").data(filterList)
+            .enter().append("div")
+            .attr("class", "badge")
+            .html(function (d) {
+                return"<span class='field'>" + d.field
+                        + "</span><span class='operator'>" + StringValueOf(d.operation)
+                        + "</span><span class='value'>" + d.value + "</span><button onclick=\"deleteItem('"
+                        + d.field + "','" + d.operation + "','" + d.value + "')\">X</button> ";
+            })
+            ;
 }
 
+function deleteItem(field, op, value) {
+    console.log(field);
+}
 function drawChars(data) {
     d3.selectAll("svg").remove().exit();
     realVotersSVG(data);
@@ -242,7 +255,6 @@ function showItems(svgHolder, data, xAxis, yAxis) {
 
 function addListeners(element) {
     element.on("click", function (d) {
-        console.log(d);
         showDetails(d.data.key);
     })
             .on('mouseover', function (d) {
@@ -290,6 +302,25 @@ function showDetails(id) {
     filterList.elements = [];
     filterList.addFilter({field: "VOTE", operation: "eq", value: id});
     drawChars(parsedData);
+}
+
+function StringValueOf(operator) {
+    switch (operator) {
+        case "eq":
+            return"=";
+        case "neq":
+            return"!=";
+        case "lt":
+            return"&lt;";
+        case "le":
+            return"&lt;=";
+        case "gt":
+            return"&gt;";
+        case "ge":
+            return"&gt;=";
+        default:
+            return operator;
+    }
 }
 
 function getCandidatesMap() {
@@ -351,12 +382,12 @@ function getCandidatesMap() {
     };
     map["B"] = {
         id: "B",
-        color: "#eee",
+        color: "#B0B29C",
         name: "White vote"
     };
     map["NSPP"] = {
         id: "NSPP",
-        color: "#000",
+        color: "#14CC47",
         name: "No answer"
     };
     return map;

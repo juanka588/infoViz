@@ -3,9 +3,17 @@ function FilterList(render) {
     this.render = render;
     this.filterOperation = "AND";
     this.addFilter = function (filterObj) {
+        if (this.elements.indexOf(filterObj) !== -1) {
+            return;
+        }
         this.elements.push(filterObj);
         this.render(this.elements);
     };
+    this.removeAll = function () {
+        this.elements = [];
+        this.render(this.elements);
+    };
+
     this.removeFilter = function (filterObj) {
         var index = this.elements.indexOf(filterObj);
         this.elements.splice(index, 1);
