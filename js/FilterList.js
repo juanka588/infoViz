@@ -3,7 +3,7 @@ function FilterList(render) {
     this.render = render;
     this.filterOperation = "AND";
     this.addFilter = function (filterObj) {
-        if (this.elements.indexOf(filterObj) !== -1) {
+        if (this.getElementIndex(filterObj) !== -1) {
             return;
         }
         this.elements.push(filterObj);
@@ -15,11 +15,20 @@ function FilterList(render) {
     };
 
     this.removeFilter = function (filterObj) {
-        var index = this.elements.indexOf(filterObj);
+        var index = this.getElementIndex(filterObj);
         this.elements.splice(index, 1);
         this.render(this.elements);
     };
-
+    this.getElementIndex = function (obj) {
+        var curr;
+        for (var i = 0; i < this.elements.length; i++) {
+            curr = this.elements[i];
+            if (curr.value === obj.value && curr.operation === obj.operation && curr.field === obj.field) {
+                return i;
+            }
+        }
+        return -1;
+    };
     this.toString = function () {
         return "";
     };

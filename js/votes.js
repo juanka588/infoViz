@@ -92,7 +92,8 @@ function inflateFilterList(filterList) {
 }
 
 function deleteItem(field, op, value) {
-    console.log(field);
+    filterList.removeFilter({field: field, operation: op, value: value});
+    drawChars(parsedData);
 }
 function drawChars(data) {
     d3.selectAll("svg").remove().exit();
@@ -179,9 +180,7 @@ function transformRealVotersData(data) {
                 return v.length;
             })
             .entries(filteredData);
-    console.log(groups);
     var series = d3.stack().keys(["value"])(groups);
-    console.log(series);
     return series;
 }
 
