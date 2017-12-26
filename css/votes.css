@@ -45,3 +45,8 @@ rect:hover{
 .value{
     color: white;
 }
+.round{ 
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+}
