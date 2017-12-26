@@ -146,7 +146,7 @@ function genderSVG(data) {
     var title = "Gender";
     prepareBarChart(title,
             "#svg_container1",
-            toArray(transformData, xDomain),
+            toArray(transformData, xDomain, "SEXE"),
             xDomain,
             yDomain,
             showItems,
@@ -165,7 +165,7 @@ function educationSVG(data) {
     var title = "Scholar Level";
     prepareBarChart(title,
             "#svg_container1",
-            toArray(transformData, xDomain),
+            toArray(transformData, xDomain, "ETUDE"),
             xDomain,
             yDomain,
             showItems,
@@ -347,7 +347,7 @@ function addListeners(element) {
 }
 
 
-function toArray(obj, properties) {
+function toArray(obj, properties, field) {
     var arr = [];
     var prop;
     for (var i = 0; i < properties.length; i++) {
@@ -356,7 +356,7 @@ function toArray(obj, properties) {
                 {
                     0: 0
                     , 1: obj[prop]
-                    , data: {key: prop, value: obj[prop]}
+                    , data: {key: prop, value: obj[prop], field: field}
                 }
         );
     }
@@ -364,7 +364,11 @@ function toArray(obj, properties) {
 }
 
 function showDetails(element) {
-    filterList.addFilter({field: "VOTE", operation: "eq", value: element.key});
+    if (typeof (element.field) == "undefined") {
+        filterList.addFilter({field: "VOTE", operation: "eq", value: element.key});
+    } else {
+        filterList.addFilter({field: element.field, operation: "eq", value: element.key});
+    }
     drawChars(parsedData);
 }
 
