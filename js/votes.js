@@ -75,7 +75,6 @@ function addControlsListeners() {
     });
 }
 
-
 function inflateFilterList(filterList) {
     var filterDiv = d3.select("#active_filters");
     filterDiv.html("");
@@ -111,7 +110,59 @@ function evalSVG(data) {
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
-    prepareBarChart(title, "#svg_container2", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showRealVoterItems);
+    prepareBarChart(title, "#svg_container2", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showEvalItems);
+}
+
+function showEvalItems(svgHolder, series, xAxis, yAxis) {
+    var subAxis = d3.scaleBand()
+            .paddingInner(0.05);
+
+    subAxis.domain(["D", "N", "A"]).rangeRound([0, xAxis.bandwidth()]);
+    var displayElement = svgHolder.mainGroup
+            .selectAll("g")
+            .data(series)
+            .enter().append("g")
+            .attr("class", "series")
+            .selectAll("rect")
+            .data(function (d) {
+                return d;
+            })
+            .enter()
+            .append("g")
+            .attr("transform", function (d) {
+                var temp = xAxis(d.data.key);
+                return "translate(" + temp + ",0)";
+            })
+            .selectAll("rect")
+            .data(function (d) {
+                var trans = toArray(d.data.value, ["A", "D", "N"], "EV_" + d.data.key);
+                return trans;
+            })
+            .enter()
+            .selectAll("rect")
+            .data(function (d) {
+                return d;
+            }).enter()
+            .append("rect")
+            .attr("fill", function (d) {
+                var temp = d.data["key"];
+                if (temp == "D") {
+                    return "red";
+                }
+                if (temp == "A") {
+                    return "green";
+                }
+                return "gray";
+            })
+            .attr("height", function (d) {
+                return yAxis(d[0]) - yAxis(d[1]);
+            })
+            .attr("width", subAxis.bandwidth())
+            .attr("transform", function (d) {
+                return "translate(" + subAxis(d.data["key"]) + "," + yAxis(d[1]) + ")";
+            })
+            ;
+    //addListeners(displayElement);
 }
 
 function approvalSVG(data) {
@@ -182,12 +233,40 @@ function transformApprovalData(data) {
 }
 
 function transformEvalData(data) {
-    var aggregateData = transformData(data, "EV_");
-    var sum = aggregateData.sum;
-    for (var key in aggregateData) {
-        aggregateData[key] = aggregateData[key] / sum;
-    }
-    return aggregateData;
+    var filteredData = filterList.applyFilters(data);
+    var summary = {max: -1, sum: 0, count: 0};
+    var prefix = "EV_";
+    var transform = filteredData.reduce(function (acc, d) {
+        var key;
+        var value;
+        for (var i = 0; i < candidatesKeys.length; i++) {
+            key = candidatesKeys[i];
+            value = d[prefix + key];
+            if (typeof (acc[key]) == "undefined") {
+                acc[key] = [];
+                acc[key]["D"] = 0;
+                acc[key]["N"] = 0;
+                acc[key]["A"] = 0;
+                acc[key]["T"] = 0;
+            }
+            if (value < 0.3) {
+                acc[key]["D"] = acc[key]["D"] + 1;
+            }
+            if (value >= 0.3 && value < 0.6) {
+                acc[key]["N"] = acc[key]["N"] + 1;
+            }
+            if (value >= 0.6) {
+                acc[key]["A"] = acc[key]["A"] + 1;
+            }
+            acc[key]["T"] = acc[key]["T"] + 1;
+            if (acc[key]["T"] > acc.max) {
+                acc.max = acc[key]["T"];
+            }
+            acc.count = acc.count + 1;
+        }
+        return acc;
+    }, summary);
+    return transform;
 }
 function transformData(data, prefix) {
     var filteredData = filterList.applyFilters(data);
