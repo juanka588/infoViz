@@ -110,122 +110,77 @@ function evalSVG(data) {
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
-    prepareBarChart(title, "#svg_container2", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showEvalItems);
+    var newData = toArray(transformData, candidatesKeys);
+    var sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
+    sbc.composedItemInflater(newData, evaluationListeners);
 }
 
-function showEvalItems(svgHolder, series, xAxis, yAxis) {
-    var subAxis = d3.scaleBand()
-            .paddingInner(0.05);
-
-    subAxis.domain(["D", "N", "A"]).rangeRound([0, xAxis.bandwidth()]);
-    var displayElement = svgHolder.mainGroup
-            .selectAll("g")
-            .data(series)
-            .enter().append("g")
-            .attr("class", "series")
-            .selectAll("rect")
-            .data(function (d) {
-                return d;
-            })
-            .enter()
-            .append("g")
-            .attr("transform", function (d) {
-                var temp = xAxis(d.data.key);
-                return "translate(" + temp + ",0)";
-            })
-            .selectAll("rect")
-            .data(function (d) {
-                var trans = toArray(d.data.value, ["A", "D", "N"], "EV_" + d.data.key);
-                return trans;
-            })
-            .enter()
-            .selectAll("rect")
-            .data(function (d) {
-                return d;
-            }).enter()
-            .append("rect")
-            .attr("fill", function (d) {
-                var temp = d.data["key"];
-                if (temp == "D") {
-                    return "red";
-                }
-                if (temp == "A") {
-                    return "green";
-                }
-                return "gray";
-            })
-            .attr("height", function (d) {
-                return yAxis(d[0]) - yAxis(d[1]);
-            })
-            .attr("width", subAxis.bandwidth())
-            .attr("transform", function (d) {
-                return "translate(" + subAxis(d.data["key"]) + "," + yAxis(d[1]) + ")";
-            })
-            ;
-    //addListeners(displayElement);
-}
 
 function approvalSVG(data) {
-    var transformData = transformApprovalData(data);
-    var yDomain = [0, transformData.max];
+    var transformedData = transformApprovalData(data);
+    var yDomain = [0, transformedData.max];
     var title = "Approval votes";
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
-    prepareBarChart(title, "#svg_container2", toArray(transformData, candidatesKeys), candidatesKeys, yDomain, showRealVoterItems);
+    var newData = toArray(transformedData, candidatesKeys);
+    var sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
+    sbc.itemInflater(newData, voterListeners, candidatesMap);
 }
 
 function realVotersSVG(data) {
     var xDomain = candidatesKeys.slice();
     xDomain.push("B");
     xDomain.push("NSPP");
-    var transformData = transformRealVotersData(data);
-    var yDomain = [0, d3.max(transformData[0], function (d) {
+    var transformedData = transformRealVotersData(data);
+    var yDomain = [0, d3.max(transformedData[0], function (d) {
             return d.data.value;
         })];
     var title = "Real Votes";
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
-    prepareBarChart(title, "#svg_container1", transformData, xDomain, yDomain, showRealVoterItems);
+
+    var sbc = new SimpleBarChart(title, "#svg_container1", xDomain, yDomain);
+    sbc.itemInflater(transformedData, voterListeners, candidatesMap);
 }
 
 function genderSVG(data) {
     var xDomain = ["F", "M", "NSPP"];
-    var transformData = transformNominalData(data, "SEXE");
-    var yDomain = [0, transformData.max];
+    var transformedData = transformNominalData(data, "SEXE");
+    var yDomain = [0, transformedData.max];
     var title = "Gender";
-    prepareBarChart(title,
+    var sbc = new SimpleBarChart(title,
             "#svg_container1",
-            toArray(transformData, xDomain, "SEXE"),
             xDomain,
             yDomain,
-            showItems,
             "Sex",
             "Count",
             new SVGHolder(250, 300, "#svg_container1"
                     , {top: 20, right: 20, bottom: 20, left: 20}
             , {top: 20, right: 0, bottom: 60, left: 70})
             );
+    var newData = toArray(transformedData, xDomain, "SEXE");
+    sbc.itemInflater(newData, voterListeners, candidatesMap);
 }
 
 function educationSVG(data) {
     var xDomain = ["1", "2", "S", "NSPP"];
-    var transformData = transformNominalData(data, "ETUDE");
-    var yDomain = [0, transformData.max];
+    var transformedData = transformNominalData(data, "ETUDE");
+    var yDomain = [0, transformedData.max];
     var title = "Scholar Level";
-    prepareBarChart(title,
+    var sbc = new SimpleBarChart(title,
             "#svg_container1",
-            toArray(transformData, xDomain, "ETUDE"),
             xDomain,
             yDomain,
-            showItems,
             "Level",
             "Count",
             new SVGHolder(250, 300, "#svg_container1"
                     , {top: 20, right: 20, bottom: 20, left: 20}
             , {top: 20, right: 0, bottom: 60, left: 70})
             );
+    var newData = toArray(transformedData, xDomain, "ETUDE");
+    sbc.itemInflater(newData, voterListeners, candidatesMap);
 }
 
 function transformApprovalData(data) {
@@ -321,86 +276,7 @@ function transformNominalData(data, key) {
     return transform;
 }
 
-function prepareBarChart(title,
-        containerID,
-        data,
-        xDomain,
-        yDomain,
-        itemInflater,
-        xTitle = "Candidates",
-        yTitle = "Votes",
-        svgHolder = new SVGHolder(500, 300, containerID
-                , {top: 20, right: 20, bottom: 20, left: 20}
-        , {top: 20, right: 0, bottom: 60, left: 70}
-        )) {
-    svgHolder.addChartTitle(title);
-//    svgHolder.showDebug();
-    var xAxis = d3.scaleBand()
-            .rangeRound([0, svgHolder.graphWidth])
-            .paddingInner(0.05)
-            .align(0.1);
-    var yAxis = d3.scaleLinear().rangeRound([svgHolder.graphHeight, 0]);
-    xAxis.domain(xDomain);
-    yAxis.domain(yDomain);
-    svgHolder.addBottomAxis(xAxis, xTitle);
-    svgHolder.addLeftAxis(yAxis, yTitle);
-    itemInflater(svgHolder, data, xAxis, yAxis);
-}
-
-function showRealVoterItems(svgHolder, series, xAxis, yAxis) {
-    var displayElement = svgHolder.mainGroup
-            .selectAll("g")
-            .data(series)
-            .enter().append("g")
-            .attr("class", "series")
-            .selectAll("rect")
-            .data(function (d) {
-                return d;
-            })
-            .enter().append("rect")
-            .attr("fill", function (d) {
-                var temp = candidatesMap[d.data["key"]];
-                return temp.color;
-            })
-            .attr("height", function (d) {
-                return yAxis(d[0]) - yAxis(d[1]);
-            })
-            .attr("width", xAxis.bandwidth())
-            .attr("transform", function (d) {
-                return "translate(" + xAxis(d.data["key"]) + "," + yAxis(d[1]) + ")";
-            })
-            ;
-    addListeners(displayElement);
-}
-
-function showItems(svgHolder, data, xAxis, yAxis) {
-    var displayElement = svgHolder.mainGroup
-            .selectAll("g")
-            .data(data)
-            .enter().append("g")
-            .attr("class", "series")
-            .selectAll("rect")
-            .data(function (d) {
-                return d;
-            }).enter()
-            .append("rect")
-            .attr("fill", function (d) {
-                var temp = candidatesMap[d.data["key"]];
-                return temp.color;
-            })
-            .attr("height", function (d) {
-                return yAxis(d[0]) - yAxis(d[1]);
-            })
-            .attr("width", xAxis.bandwidth())
-            .attr("transform", function (d) {
-                return "translate(" + xAxis(d.data["key"]) + "," + yAxis(d[1]) + ")";
-            })
-            ;
-    addListeners(displayElement);
-}
-
-
-function addListeners(element) {
+function voterListeners(element) {
     element.on("click", function (d) {
         showDetails(d.data);
     })
@@ -425,6 +301,57 @@ function addListeners(element) {
             });
 }
 
+function evaluationListeners(element) {
+    element.on("click", function (d) {
+        var data = d.data;
+        var lowerBound, upperBound;
+        switch (data.key) {
+            case "D":
+                lowerBound = 0;
+                upperBound = 0.3;
+                break;
+            case "N":
+                lowerBound = 0.3;
+                upperBound = 0.6;
+                break;
+            case "A":
+                lowerBound = 0.6;
+                upperBound = 1.01;
+                break;
+        }
+        filterList.addFilter({field: data.field, operation: "lt", value: upperBound});
+        showDetails({field: data.field, operation: "ge", key: lowerBound});
+    })
+            .on('mouseover', function (d) {
+                tooltipDiv.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                tooltipDiv.html("<span class='axis-title'>Count: </span> " + d[1])
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+            })
+            .on('mouseout', function () {
+                tooltipDiv.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+            })
+            .append("svg:title")
+            .text(function (d) {
+                return "observation: " + d[1];
+            });
+}
+
+
+function showDetails(element) {
+    if (typeof (element.field) == "undefined") {
+        filterList.addFilter({field: "VOTE", operation: "eq", value: element.key});
+    } else if (typeof (element.operation) == "undefined") {
+        filterList.addFilter({field: element.field, operation: "eq", value: element.key});
+    } else {
+        filterList.addFilter({field: element.field, operation: element.operation, value: element.key});
+    }
+    drawChars(parsedData);
+}
 
 function toArray(obj, properties, field) {
     var arr = [];
@@ -442,14 +369,6 @@ function toArray(obj, properties, field) {
     return [arr];
 }
 
-function showDetails(element) {
-    if (typeof (element.field) == "undefined") {
-        filterList.addFilter({field: "VOTE", operation: "eq", value: element.key});
-    } else {
-        filterList.addFilter({field: element.field, operation: "eq", value: element.key});
-    }
-    drawChars(parsedData);
-}
 
 function downloadData() {
     var filteredData = filterList.applyFilters(parsedData);
