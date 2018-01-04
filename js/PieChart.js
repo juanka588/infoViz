@@ -20,7 +20,7 @@ function PieChart(title, containerID, svgHolder) {
                 .outerRadius(radius - 10)
                 .innerRadius(0);
         var label = d3.arc()
-                .outerRadius(radius - 40)
+                .outerRadius(radius - 60)
                 .innerRadius(radius - 40);
 
         var displayElement = this.svgHolder.mainGroup.selectAll(".arc")
@@ -33,7 +33,9 @@ function PieChart(title, containerID, svgHolder) {
                         "translate(" + this.svgHolder.graphWidth / 2
                         + ","
                         + this.svgHolder.graphHeight / 2 + ")")
-                .attr("d", path)
+                .attr("d", function (d) {
+                    return path.startAngle(d.startAngle).endAngle(d.endAngle)();
+                })
                 .attr("fill", function (d) {
                     var temp = candidatesMap[d.data["key"]];
                     return temp.color;
@@ -51,6 +53,18 @@ function PieChart(title, containerID, svgHolder) {
                 .text(function (d) {
                     return d.data["key"];
                 });
+
+        displayElement
+                .transition()
+                .duration(1000)
+                .attrTween("d", function (d) {
+                    var interpolate = d3.interpolate(d.startAngle, d.endAngle);
+                    return function (t) {
+                        d.endAngle = interpolate(t);
+                        return path.startAngle(d.startAngle).endAngle(d.endAngle)();
+                    };
+                })
+                ;
         elementListener(displayElement);
     };
 }

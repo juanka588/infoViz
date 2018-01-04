@@ -40,13 +40,22 @@ function SimpleBarChart(title,
                     return temp.color;
                 })
                 .attr("height", function (d) {
-                    return self.yAxis(d[0]) - self.yAxis(d[1]);
+                    return 0;
                 })
                 .attr("width", this.xAxis.bandwidth())
                 .attr("transform", function (d) {
-                    return "translate(" + self.xAxis(d.data["key"]) + "," + self.yAxis(d[1]) + ")";
+                    return "translate(" + self.xAxis(d.data["key"]) + "," + self.svgHolder.graphHeight + ")";
                 })
                 ;
+        displayElement
+                .transition()
+                .duration(1000)
+                .attr("transform", function (d) {
+                    return "translate(" + self.xAxis(d.data["key"]) + "," + self.yAxis(d[1]) + ")";
+                })
+                .attr("height", function (d) {
+                    return self.yAxis(d[0]) - self.yAxis(d[1]);
+                });
         elementListener(displayElement);
     };
 
