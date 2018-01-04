@@ -148,39 +148,44 @@ function realVotersSVG(data) {
 function genderSVG(data) {
     var xDomain = ["F", "M", "NSPP"];
     var transformedData = transformNominalData(data, "SEXE");
-    var yDomain = [0, transformedData.max];
+//    var yDomain = [0, transformedData.max];
     var title = "Gender";
-    var sbc = new SimpleBarChart(title,
-            "#svg_container1",
-            xDomain,
-            yDomain,
-            "Sex",
-            "Count",
-            new SVGHolder(250, 300, "#svg_container1"
-                    , {top: 20, right: 20, bottom: 20, left: 20}
-            , {top: 20, right: 0, bottom: 60, left: 70})
-            );
-    var newData = toArray(transformedData, xDomain, "SEXE");
-    sbc.itemInflater(newData, voterListeners, candidatesMap);
+//    var sbc = new SimpleBarChart(title,
+//            "#svg_container1",
+//            xDomain,
+//            yDomain,
+//            "Sex",
+//            "Count",
+//            new SVGHolder(250, 300, "#svg_container1"
+//                    , {top: 20, right: 20, bottom: 20, left: 20}
+//            , {top: 20, right: 0, bottom: 60, left: 70})
+//            );
+    var newData = toSimpleArray(transformedData, xDomain, "SEXE");
+//    sbc.itemInflater(newData, voterListeners, candidatesMap);
+    var genderPie = new PieChart(title, "#svg_container1");
+    genderPie.itemInflater(newData, voterListeners, candidatesMap);
 }
 
 function educationSVG(data) {
     var xDomain = ["1", "2", "S", "NSPP"];
     var transformedData = transformNominalData(data, "ETUDE");
-    var yDomain = [0, transformedData.max];
+//    var yDomain = [0, transformedData.max];
     var title = "Scholar Level";
-    var sbc = new SimpleBarChart(title,
-            "#svg_container1",
-            xDomain,
-            yDomain,
-            "Level",
-            "Count",
-            new SVGHolder(250, 300, "#svg_container1"
-                    , {top: 20, right: 20, bottom: 20, left: 20}
-            , {top: 20, right: 0, bottom: 60, left: 70})
-            );
-    var newData = toArray(transformedData, xDomain, "ETUDE");
-    sbc.itemInflater(newData, voterListeners, candidatesMap);
+//    var sbc = new SimpleBarChart(title,
+//            "#svg_container1",
+//            xDomain,
+//            yDomain,
+//            "Level",
+//            "Count",
+//            new SVGHolder(250, 300, "#svg_container1"
+//                    , {top: 20, right: 20, bottom: 20, left: 20}
+//            , {top: 20, right: 0, bottom: 60, left: 70})
+//            );
+//    var newData = toArray(transformedData, xDomain, "ETUDE");
+//    sbc.itemInflater(newData, voterListeners, candidatesMap);
+    var newData = toSimpleArray(transformedData, xDomain, "ETUDE");
+    var educationPie = new PieChart(title, "#svg_container1");
+    educationPie.itemInflater(newData, voterListeners, candidatesMap);
 }
 
 function transformApprovalData(data) {
@@ -285,7 +290,7 @@ function voterListeners(element) {
                         .duration(200)
                         .style("opacity", .9);
                 tooltipDiv.html("<img class='round' src='./images/" + candidatesMap[d.data["key"]].image + "'>"
-                        + "<span class='axis-title'>Count: </span> " + d[1]
+                        + "<span class='axis-title'>Count: </span> " + d.data["value"]
                         + "<br /> <span>Name: " + candidatesMap[d.data["key"]].name + "</span>")
                         .style("left", (d3.event.pageX) + "px")
                         .style("top", (d3.event.pageY - 28) + "px");
@@ -297,7 +302,7 @@ function voterListeners(element) {
             })
             .append("svg:title")
             .text(function (d) {
-                return "observation: " + d[1];
+                return "observation: " + d.data["value"];
             });
 }
 
@@ -369,12 +374,24 @@ function toArray(obj, properties, field) {
     return [arr];
 }
 
+function toSimpleArray(obj, properties, field) {
+    var arr = [];
+    var prop;
+    for (var i = 0; i < properties.length; i++) {
+        prop = properties[i];
+        arr.push({
+            key: prop,
+            value: obj[prop],
+            field: field
+        });
+    }
+    return [arr];
+}
+
 
 function downloadData() {
     var filteredData = filterList.applyFilters(parsedData);
-    var exportData = [];
-    exportData["data"] = filteredData;
-    downloadObjectAsJson(exportData, "votes");
+    downloadObjectAsJson(filteredData, "votes");
 }
 
 function StringValueOf(operator) {

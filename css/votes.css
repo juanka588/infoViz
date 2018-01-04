@@ -7,7 +7,7 @@ and open the template in the editor.
     Created on : 17/12/2017, 12:02:23 PM
     Author     : Camilo
 */
-rect:hover{
+rect:hover,.arc:hover{
     stroke:yellow !important;   
 }
 .badge *:hover{
@@ -49,4 +49,7 @@ rect:hover{
     border-radius: 50%;
     width: 80px;
     height: 80px;
+}
+.arc-label{
+    font-size: xx-small;
 }

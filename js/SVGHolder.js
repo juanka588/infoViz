@@ -61,7 +61,7 @@ function SVGHolder(
                 .attr("text-anchor", "middle")
                 .attr("class", "axis-title")
                 .attr("transform", "translate("
-                        + (this.graphWidth / 2 + this.getLeft())
+                        + this.getMiddleX()
                         + ","
                         + (this.height - this.margin.bottom - this.padding.bottom / 2)
                         + ")")
@@ -85,7 +85,7 @@ function SVGHolder(
                 .attr("transform", "translate("
                         + (this.margin.left + this.padding.left / 2)
                         + ","
-                        + (this.graphHeight / 2 + this.getTop())
+                        + this.getMiddleY()
                         + ")rotate(-90)")
                 .text(title);
     };
@@ -102,6 +102,12 @@ function SVGHolder(
     this.getBottom = function () {
         return this.padding.bottom + this.margin.bottom;
     };
+    this.getMiddleX = function () {
+        return  this.graphWidth / 2 + this.getLeft();
+    };
+    this.getMiddleY = function () {
+        return  this.graphHeight / 2 + this.getTop();
+    };
 
     this.enableZoom = function (callback) {
         this.svg.call(d3.zoom()
@@ -113,7 +119,7 @@ function SVGHolder(
                 .attr("text-anchor", "middle")
                 .attr("class", "axis-title")
                 .attr("transform", "translate("
-                        + (this.graphWidth / 2 + this.getLeft())
+                        + this.getMiddleX()
                         + ","
                         + (this.margin.top + this.padding.top / 2)
                         + ")")

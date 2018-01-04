@@ -6,7 +6,8 @@ function loadScript(src) {
     head.appendChild(newjs);
 }
 function downloadObjectAsJson(exportObj, exportName) {
-    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+    var jsonStr = JSON.stringify(exportObj);
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonStr);
     var downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", exportName + ".json");
