@@ -24,12 +24,12 @@ function DiscreteBubbleChart(title,
     this.xAxis.domain(xDomain);
     this.yAxis.domain(yDomain);
 
-    this.sizeAxis = d3.scaleSqrt().domain([0, 50]);
-    this.sizeAxis.range([0, 15]);
+    this.sizeAxis = d3.scaleSqrt().domain([0, 100]);
+    this.sizeAxis.range([0,20]);
 
     this.svgHolder.addBottomAxis(this.xAxis, xTitle);
     this.svgHolder.addLeftAxis(this.yAxis, yTitle);
-    this.itemInflater = function (data, elementListener, candidatesMap) {
+    this.itemInflater = function (data, elementListener) {
         var self = this;
         var displayGroup = this.svgHolder.mainGroup
                 .selectAll("g")
@@ -57,34 +57,19 @@ function DiscreteBubbleChart(title,
                 .selectAll("circle")
                 .data(function (d) {
                     var tempData = d.values.slice();
-                    var simulation1 = d3.forceSimulation(d.values)
+                    d3.forceSimulation(tempData)
                             .force('charge', d3.forceManyBody().strength(5))
-                            .force('center', d3.forceCenter(200 / 2, 200 / 2))
+                            .force('center', d3.forceCenter(
+                                    (self.xAxis(d.key) + self.xAxis.bandwidth() / 2)
+                                    , self.yAxis.bandwidth() / 2))
                             .force('collision', d3.forceCollide().radius(function (d) {
                                 return d.values.length;
                             }))
                             .on('tick', function () {
                                 var u = displayGroup
                                         .selectAll("circle").data(tempData);
-                                u.enter()
-                                        .append('circle')
-                                        .attr("class", "bubble")
-                                        .attr("fill", function (d) {
-                                            var temp = candidatesMap[d["key"]];
-                                            return temp.color;
-                                        })
-                                        .attr('r', function (d) {
-                                            return self.sizeAxis(d.values.length);
-                                        })
-                                        .merge(u)
-                                        .attr('cx', function (d) {
-                                            return d.x;
-                                        })
-                                        .attr('cy', function (d) {
-                                            return d.y;
-                                        });
-
-                                u.exit().remove();
+                                refresh(u, self.sizeAxis);
+                                elementListener(u);
                             });
                     return d.values;
                 })
@@ -98,7 +83,26 @@ function DiscreteBubbleChart(title,
 //                .attr("r", function (d) {
 //                    return self.sizeAxis(100);
 //                });
-        // elementListener(displayElement);
     };
 
+}
+function refresh(u, sizeAxis) {
+    u.enter()
+            .append('circle')
+            .attr("class", "bubble")
+            .attr("class", function (d) {
+                return "c-" + d["key"];
+            })
+            .attr('r', function (d) {
+                return sizeAxis(d.values.length);
+            })
+            .merge(u)
+            .attr('cx', function (d) {
+                return d.x;
+            })
+            .attr('cy', function (d) {
+                return d.y;
+            });
+
+    u.exit().remove();
 }

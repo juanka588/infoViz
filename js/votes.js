@@ -110,8 +110,7 @@ function candidatesSVG(data) {
     var yDomain = ["S", "2", "1", "NSPP"];
     var title = "Candidates Approved";
     var dbc = new DiscreteBubbleChart(title, "#svg_container4", xDomain, yDomain);
-    dbc.itemInflater(transformedData, evaluationListeners, candidatesMap);
-
+    dbc.itemInflater(transformedData, candidatesBubbleListener);
 }
 
 function transformVotersData(data) {
@@ -152,7 +151,7 @@ function approvalSVG(data) {
     }
     var newData = toArray(transformedData, candidatesKeys);
     var sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
-    sbc.itemInflater(newData, voterListeners, candidatesMap);
+    sbc.itemInflater(newData, voterListeners);
 }
 
 function realVotersSVG(data) {
@@ -169,7 +168,7 @@ function realVotersSVG(data) {
     }
 
     var sbc = new SimpleBarChart(title, "#svg_container1", xDomain, yDomain);
-    sbc.itemInflater(transformedData, voterListeners, candidatesMap);
+    sbc.itemInflater(transformedData, voterListeners);
 }
 
 function genderSVG(data) {
@@ -190,7 +189,7 @@ function genderSVG(data) {
     var newData = toSimpleArray(transformedData, xDomain, "SEXE");
 //    sbc.itemInflater(newData, voterListeners, candidatesMap);
     var genderPie = new PieChart(title, "#svg_container1");
-    genderPie.itemInflater(newData, voterListeners, candidatesMap);
+    genderPie.itemInflater(newData, voterListeners);
 }
 
 function educationSVG(data) {
@@ -212,7 +211,7 @@ function educationSVG(data) {
 //    sbc.itemInflater(newData, voterListeners, candidatesMap);
     var newData = toSimpleArray(transformedData, xDomain, "ETUDE");
     var educationPie = new PieChart(title, "#svg_container1");
-    educationPie.itemInflater(newData, voterListeners, candidatesMap);
+    educationPie.itemInflater(newData, voterListeners);
 }
 
 function transformApprovalData(data) {
@@ -306,6 +305,27 @@ function transformNominalData(data, key) {
         return acc;
     }, summary);
     return transform;
+}
+
+function candidatesBubbleListener(element) {
+    element.on("click", function (d) {
+        showDetails(d);
+    })
+            .on('mouseover', function (d) {
+                tooltipDiv.transition()
+                        .duration(200)
+                        .style("opacity", .9);
+                tooltipDiv.html("<img class='round' src='./images/" + candidatesMap[d["key"]].image + "'>"
+                        + "<span class='axis-title'>Count: </span> " + d["values"].length
+                        + "<br /> <span>Name: " + candidatesMap[d["key"]].name + "</span>")
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY - 28) + "px");
+            })
+            .on('mouseout', function () {
+                tooltipDiv.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+            });
 }
 
 function voterListeners(element) {

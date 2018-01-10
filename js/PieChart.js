@@ -7,7 +7,7 @@ function PieChart(title, containerID, svgHolder) {
         this.svgHolder = svgHolder;
     }
     this.svgHolder.addChartTitle(title);
-    this.itemInflater = function (data, elementListener, candidatesMap) {
+    this.itemInflater = function (data, elementListener) {
         var self = this;
         var data2 = data[0];
         var radius = Math.min(this.svgHolder.graphWidth, this.svgHolder.graphHeight) / 2;
@@ -36,9 +36,8 @@ function PieChart(title, containerID, svgHolder) {
                 .attr("d", function (d) {
                     return path.startAngle(d.startAngle).endAngle(d.endAngle)();
                 })
-                .attr("fill", function (d) {
-                    var temp = candidatesMap[d.data["key"]];
-                    return temp.color;
+                .attr("class", function (d) {
+                    return "c-" + d.data["key"];
                 });
         displayElement.append("text")
                 .attr("class", "arc-label")

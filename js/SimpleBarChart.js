@@ -23,7 +23,7 @@ function SimpleBarChart(title,
     this.svgHolder.addBottomAxis(this.xAxis, xTitle);
     this.svgHolder.addLeftAxis(this.yAxis, yTitle);
 
-    this.itemInflater = function (data, elementListener, candidatesMap) {
+    this.itemInflater = function (data, elementListener) {
         var self = this;
         var displayElement = this.svgHolder.mainGroup
                 .selectAll("g")
@@ -35,9 +35,8 @@ function SimpleBarChart(title,
                     return d;
                 })
                 .enter().append("rect")
-                .attr("fill", function (d) {
-                    var temp = candidatesMap[d.data["key"]];
-                    return temp.color;
+                .attr("class", function (d) {
+                    return "c-" + d.data["key"];
                 })
                 .attr("height", function (d) {
                     return 0;
@@ -91,7 +90,7 @@ function SimpleBarChart(title,
                     return d;
                 }).enter()
                 .append("rect")
-                .attr("fill", function (d) {
+                .attr("class", function (d) {
                     var temp = d.data["key"];
                     if (temp == "D") {
                         return "red";

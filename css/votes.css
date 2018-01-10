@@ -53,3 +53,66 @@ rect:hover,.arc:hover{
 .arc-label{
     font-size: xx-small;
 }
+.c-1{
+    fill: #65DBFF;
+}
+.c-2{
+    fill: #4299E8;
+}
+.c-S{
+    fill: #4247E8;
+}
+.c-F{
+    fill: #ee3d5d;
+}
+.c-M{
+    fill: #187ec2;
+}
+.c-NDA{
+    fill:#0088c6;
+}
+.c-MLP{
+    fill:#83726d;
+}
+.c-EM{
+    fill:#ffd850;
+}
+.c-BH{
+    fill:#f39dc7;
+}
+.c-NA{
+    fill:#a21700;
+}
+.c-PP{
+    fill:#f96f43;
+}
+.c-JC{
+    fill:#464a4c;
+}
+.c-JL{
+    fill:#cee9f8;
+}
+.c-JLM{
+    fill:#de2707;
+}
+.c-FA{
+    fill:#131413;
+}
+.c-FF{
+    fill:#75bbe2;
+}
+.c-B{
+    fill:#B0B29C;
+}
+.c-NSPP{
+    fill:#14CC47;
+}
+.red{
+    fill:red;
+}
+.gray{
+    fill:gray;
+}
+.green{
+    fill:green;
+}
