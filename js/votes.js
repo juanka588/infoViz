@@ -101,16 +101,43 @@ function drawChars(data) {
     educationSVG(data);
     approvalSVG(data);
     evalSVG(data);
+    candidatesSVG(data);
+}
+
+function candidatesSVG(data) {
+    var transformedData = transformVotersData(data);
+    var xDomain = ["NSPP", "18", "30", "40", "50", "60", "70"];
+    var yDomain = ["S", "2", "1", "NSPP"];
+    var title = "Candidates Approved";
+    var dbc = new DiscreteBubbleChart(title, "#svg_container4", xDomain, yDomain);
+    dbc.itemInflater(transformedData, evaluationListeners, candidatesMap);
+
+}
+
+function transformVotersData(data) {
+    var filteredData = filterList.applyFilters(data);
+    var groups = d3.nest()
+            .key(function (d) {
+                return d["ETUDE"];
+            })
+            .key(function (d) {
+                return d["AGE"];
+            })
+            .key(function (d) {
+                return d["VOTE"];
+            })
+            .entries(filteredData);
+    return groups;
 }
 
 function evalSVG(data) {
-    var transformData = transformEvalData(data);
-    var yDomain = [0, transformData.max];
+    var transformedData = transformEvalData(data);
+    var yDomain = [0, transformedData.max];
     var title = "Evaluation votes";
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
-    var newData = toArray(transformData, candidatesKeys);
+    var newData = toArray(transformedData, candidatesKeys);
     var sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
     sbc.composedItemInflater(newData, evaluationListeners);
 }

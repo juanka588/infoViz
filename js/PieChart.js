@@ -39,7 +39,6 @@ function PieChart(title, containerID, svgHolder) {
                 .attr("fill", function (d) {
                     var temp = candidatesMap[d.data["key"]];
                     return temp.color;
-                    ;
                 });
         displayElement.append("text")
                 .attr("class", "arc-label")
