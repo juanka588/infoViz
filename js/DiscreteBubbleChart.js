@@ -25,7 +25,7 @@ function DiscreteBubbleChart(title,
     this.yAxis.domain(yDomain);
 
     this.sizeAxis = d3.scaleSqrt().domain([0, 100]);
-    this.sizeAxis.range([0,20]);
+    this.sizeAxis.range([0, 20]);
 
     this.svgHolder.addBottomAxis(this.xAxis, xTitle);
     this.svgHolder.addLeftAxis(this.yAxis, yTitle);
@@ -52,25 +52,15 @@ function DiscreteBubbleChart(title,
                 })
                 .attr("width", self.xAxis.bandwidth())
                 .attr("height", self.yAxis.bandwidth());
-
+        var counter = 0;
         displayGroup
                 .selectAll("circle")
                 .data(function (d) {
                     var tempData = d.values.slice();
-                    d3.forceSimulation(tempData)
-                            .force('charge', d3.forceManyBody().strength(5))
-                            .force('center', d3.forceCenter(
-                                    (self.xAxis(d.key) + self.xAxis.bandwidth() / 2)
-                                    , self.yAxis.bandwidth() / 2))
-                            .force('collision', d3.forceCollide().radius(function (d) {
-                                return d.values.length;
-                            }))
-                            .on('tick', function () {
-                                var u = displayGroup
-                                        .selectAll("circle").data(tempData);
-                                refresh(u, self.sizeAxis);
-                                elementListener(u);
-                            });
+                    var center = {x: self.xAxis(d.key) + self.xAxis.bandwidth() / 2
+                        , y: self.yAxis.bandwidth() / 2};
+                    var cs = new customSimulator(tempData, displayGroup, center, self.sizeAxis, "c" + counter, elementListener);
+                    counter++;
                     return d.values;
                 })
                 ;
@@ -86,10 +76,10 @@ function DiscreteBubbleChart(title,
     };
 
 }
-function refresh(u, sizeAxis) {
+function refresh(u, cName, sizeAxis) {
     u.enter()
             .append('circle')
-            .attr("class", "bubble")
+            .attr("class", "bubble " + cName)
             .attr("class", function (d) {
                 return "c-" + d["key"];
             })
@@ -105,4 +95,32 @@ function refresh(u, sizeAxis) {
             });
 
     u.exit().remove();
+}
+
+
+function customSimulator(data, parent, center, sizeAxis, cName, elementListener) {
+    this.data = data;
+    this.parent = parent;
+    this.center = center;
+    this.sizeAxis = sizeAxis;
+    this.cName = cName;
+    this.elementListener = elementListener;
+    this.build = function () {
+        var self = this;
+        d3.forceSimulation(self.data)
+                .force('charge', d3.forceManyBody().strength(5))
+                .force('center', d3.forceCenter(self.center.x, self.center.y))
+                .force('collision', d3.forceCollide().radius(function (d) {
+                    return d.values.length;
+                }))
+                .on('tick', function () {
+                    var u = d3.select("#svg_container4 svg")
+                            .selectAll('.' + self.cName)
+                            .data(self.data);
+                    refresh(u, self.cName, self.sizeAxis);
+                    self.elementListener(u);
+                })
+                ;
+    };
+    this.build();
 }
