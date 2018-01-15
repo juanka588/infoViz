@@ -116,7 +116,7 @@ function customSimulator(data, parent, center, sizeAxis, cName, elementListener)
                 .force('charge', d3.forceManyBody().strength(5))
                 .force('center', d3.forceCenter(self.center.x, self.center.y))
                 .force('collision', d3.forceCollide().radius(function (d) {
-                    return d.values.length;
+                    return self.sizeAxis(d.values.length);
                 }))
                 .on('tick', function () {
                     var u = parent
