@@ -118,7 +118,7 @@ div.tooltip {
 }
 
 .discrete-separator{
-    fill:none;
+    fill:transparent;
     stroke: black; 
     stroke-dasharray: 2 1;
 }

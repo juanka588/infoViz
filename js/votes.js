@@ -63,6 +63,11 @@ function addControlsListeners() {
     var operation = d3.select("#filter_operator");
     var value = d3.select("#filter_value");
 
+    d3.select("#relative_size").on("change", function () {
+        console.log(d3.select("#relative_size").node().value);
+        drawChars(parsedData);
+    });
+
     d3.select("#add_btn").on("click", function () {
         filterList.addFilter(
                 {
@@ -110,7 +115,7 @@ function candidatesSVG(data) {
     var yDomain = ["S", "2", "1", "NSPP"];
     var title = "Candidates Approved";
     var dbc = new DiscreteBubbleChart(title, "#svg_container4", xDomain, yDomain);
-    dbc.itemInflater(transformedData, candidatesBubbleListener);
+    dbc.itemInflater(transformedData, candidatesBubbleListener, d3.select("#relative_size").node().value === "true");
 }
 
 function transformVotersData(data) {
@@ -174,20 +179,8 @@ function realVotersSVG(data) {
 function genderSVG(data) {
     var xDomain = ["F", "M", "NSPP"];
     var transformedData = transformNominalData(data, "SEXE");
-//    var yDomain = [0, transformedData.max];
     var title = "Gender";
-//    var sbc = new SimpleBarChart(title,
-//            "#svg_container1",
-//            xDomain,
-//            yDomain,
-//            "Sex",
-//            "Count",
-//            new SVGHolder(250, 300, "#svg_container1"
-//                    , {top: 20, right: 20, bottom: 20, left: 20}
-//            , {top: 20, right: 0, bottom: 60, left: 70})
-//            );
     var newData = toSimpleArray(transformedData, xDomain, "SEXE");
-//    sbc.itemInflater(newData, voterListeners, candidatesMap);
     var genderPie = new PieChart(title, "#svg_container1");
     genderPie.itemInflater(newData, voterListeners);
 }
@@ -195,20 +188,7 @@ function genderSVG(data) {
 function educationSVG(data) {
     var xDomain = ["1", "2", "S", "NSPP"];
     var transformedData = transformNominalData(data, "ETUDE");
-//    var yDomain = [0, transformedData.max];
     var title = "Scholar Level";
-//    var sbc = new SimpleBarChart(title,
-//            "#svg_container1",
-//            xDomain,
-//            yDomain,
-//            "Level",
-//            "Count",
-//            new SVGHolder(250, 300, "#svg_container1"
-//                    , {top: 20, right: 20, bottom: 20, left: 20}
-//            , {top: 20, right: 0, bottom: 60, left: 70})
-//            );
-//    var newData = toArray(transformedData, xDomain, "ETUDE");
-//    sbc.itemInflater(newData, voterListeners, candidatesMap);
     var newData = toSimpleArray(transformedData, xDomain, "ETUDE");
     var educationPie = new PieChart(title, "#svg_container1");
     educationPie.itemInflater(newData, voterListeners);
