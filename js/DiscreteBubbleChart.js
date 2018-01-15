@@ -24,14 +24,17 @@ function DiscreteBubbleChart(title,
     this.xAxis.domain(xDomain);
     this.yAxis.domain(yDomain);
 
-    this.sizeAxis = d3.scaleSqrt().domain([0, 100]);
-    this.sizeAxis.range([0, 20]);
+    this.sizeAxis = d3.scaleSqrt().domain([0, 190]);
+    this.sizeAxis.range([
+        0,
+        d3.min([this.xAxis.bandwidth(), this.yAxis.bandwidth()]) / 2.0
+    ]);
 
     this.svgHolder.addBottomAxis(this.xAxis, xTitle);
     this.svgHolder.addLeftAxis(this.yAxis, yTitle);
     this.itemInflater = function (data, elementListener) {
         var self = this;
-        var displayGroup = this.svgHolder.mainGroup
+        var displayGroup = self.svgHolder.mainGroup
                 .selectAll("g")
                 .data(data)
                 .enter().append("g")
@@ -40,6 +43,9 @@ function DiscreteBubbleChart(title,
                 })
                 .selectAll("g")
                 .data(function (d) {
+                    d.values.forEach(function (element) {
+                        element.parent = d.key;
+                    });
                     return d.values;
                 })
                 .enter().append("g");
@@ -58,8 +64,8 @@ function DiscreteBubbleChart(title,
                 .data(function (d) {
                     var tempData = d.values.slice();
                     var center = {x: self.xAxis(d.key) + self.xAxis.bandwidth() / 2
-                        , y: self.yAxis.bandwidth() / 2};
-                    var cs = new customSimulator(tempData, displayGroup, center, self.sizeAxis, "c" + counter, elementListener);
+                        , y: self.yAxis(d.parent) + self.yAxis.bandwidth() / 2};
+                    var cs = new customSimulator(tempData, self.svgHolder.mainGroup, center, self.sizeAxis, "c" + counter, elementListener);
                     counter++;
                     return d.values;
                 })
@@ -79,9 +85,8 @@ function DiscreteBubbleChart(title,
 function refresh(u, cName, sizeAxis) {
     u.enter()
             .append('circle')
-            .attr("class", "bubble " + cName)
             .attr("class", function (d) {
-                return "c-" + d["key"];
+                return "bubble " + cName + " c-" + d["key"];
             })
             .attr('r', function (d) {
                 return sizeAxis(d.values.length);
@@ -114,7 +119,7 @@ function customSimulator(data, parent, center, sizeAxis, cName, elementListener)
                     return d.values.length;
                 }))
                 .on('tick', function () {
-                    var u = d3.select("#svg_container4 svg")
+                    var u = parent
                             .selectAll('.' + self.cName)
                             .data(self.data);
                     refresh(u, self.cName, self.sizeAxis);
