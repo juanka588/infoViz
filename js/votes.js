@@ -385,37 +385,6 @@ function showDetails(element) {
     drawChars(parsedData);
 }
 
-function toArray(obj, properties, field) {
-    var arr = [];
-    var prop;
-    for (var i = 0; i < properties.length; i++) {
-        prop = properties[i];
-        arr.push(
-                {
-                    0: 0
-                    , 1: obj[prop]
-                    , data: {key: prop, value: obj[prop], field: field}
-                }
-        );
-    }
-    return [arr];
-}
-
-function toSimpleArray(obj, properties, field) {
-    var arr = [];
-    var prop;
-    for (var i = 0; i < properties.length; i++) {
-        prop = properties[i];
-        arr.push({
-            key: prop,
-            value: obj[prop],
-            field: field
-        });
-    }
-    return [arr];
-}
-
-
 function downloadData() {
     var filteredData = filterList.applyFilters(parsedData);
     downloadObjectAsJson(filteredData, "votes");
