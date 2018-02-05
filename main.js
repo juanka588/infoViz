@@ -1,9 +1,9 @@
-var http = require('http');
-var fs = require('fs');
+const http = require('http');
+const fs = require('fs');
 console.log("Starting");
-var host = "127.0.0.1";
-var port = 8384;
-var server = http.createServer(function (request, response) {
+const host = "127.0.0.1";
+const port = 8384;
+const server = http.createServer(function (request, response) {
     console.log("Recieved request:" + request.url);
     fs.readFile("./" + request.url, function (error, data) {
         if (error) {

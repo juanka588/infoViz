@@ -1,11 +1,11 @@
 let candidatesMap = getCandidatesMap();
 let candidatesKeys =
-        ["NDA", "MLP", "EM", "BH", "NA", "PP", "JC", "JL", "JLM", "FA", "FF"];
+    ["NDA", "MLP", "EM", "BH", "NA", "PP", "JC", "JL", "JLM", "FA", "FF"];
 
 let parsedData = null;
 let filterList = new FilterList(inflateFilterList);
 
-var tooltipDiv;
+let tooltipDiv;
 
 window.onload = function () {
     init();
@@ -13,18 +13,18 @@ window.onload = function () {
 
 function init() {
     tooltipDiv = d3.select("body").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+        .attr("class", "tooltip")
+        .style("opacity", 0);
     d3.csv("./data/votes.csv")
-            .row(parseData)
-            .get(onDataLoaded);
+        .row(parseData)
+        .get(onDataLoaded);
 }
 
 function parseData(d) {
-    for (var key in  candidatesMap) {
+    for (let key in  candidatesMap) {
         if (!(key === "B" || key.includes("NSPP"))) {
             d["AV_" + key] = parseFloat(d["AV_" + key]);
-            var newVal = parseFloat(d["EV_" + key]);
+            const newVal = parseFloat(d["EV_" + key]);
             d["EV_" + key] = d3.min([1, d3.max([0, newVal])]);
         }
     }
@@ -36,17 +36,17 @@ function onDataLoaded(error, data) {
         throw error;
     console.log(data);
     parsedData = data.slice();
-    var select = d3.select("#filter_field");
+    const select = d3.select("#filter_field");
     select.selectAll("option")
-            .data(data.columns)
-            .enter()
-            .insert("option")
-            .attr("value", function (d) {
-                return d;
-            })
-            .text(function (d) {
-                return d;
-            });
+        .data(data.columns)
+        .enter()
+        .insert("option")
+        .attr("value", function (d) {
+            return d;
+        })
+        .text(function (d) {
+            return d;
+        });
     addControlsListeners();
     drawChars(data);
 }
@@ -56,12 +56,12 @@ function addControlsListeners() {
         filterList.removeAll();
         drawChars(parsedData);
     });
-    var fieldFilter = d3.select("#filter_field");
+    const fieldFilter = d3.select("#filter_field");
     fieldFilter.on("change", function () {
         console.log(fieldFilter.node().value);
     });
-    var operation = d3.select("#filter_operator");
-    var value = d3.select("#filter_value");
+    const operation = d3.select("#filter_operator");
+    const value = d3.select("#filter_value");
 
     d3.select("#relative_size").on("change", function () {
         console.log(d3.select("#relative_size").node().value);
@@ -70,35 +70,36 @@ function addControlsListeners() {
 
     d3.select("#add_btn").on("click", function () {
         filterList.addFilter(
-                {
-                    field: fieldFilter.node().value,
-                    operation: operation.node().value,
-                    value: value.node().value
-                }
+            {
+                field: fieldFilter.node().value,
+                operation: operation.node().value,
+                value: value.node().value
+            }
         );
         drawChars(parsedData);
     });
 }
 
 function inflateFilterList(filterList) {
-    var filterDiv = d3.select("#active_filters");
+    const filterDiv = d3.select("#active_filters");
     filterDiv.html("");
     filterDiv.selectAll("div").data(filterList)
-            .enter().append("div")
-            .attr("class", "badge")
-            .html(function (d) {
-                return"<span class='field'>" + d.field
-                        + "</span><span class='operator'>" + StringValueOf(d.operation)
-                        + "</span><span class='value'>" + d.value + "</span><button onclick=\"deleteItem('"
-                        + d.field + "','" + d.operation + "','" + d.value + "')\">X</button> ";
-            })
-            ;
+        .enter().append("div")
+        .attr("class", "badge")
+        .html(function (d) {
+            return "<span class='field'>" + d.field
+                + "</span><span class='operator'>" + StringValueOf(d.operation)
+                + "</span><span class='value'>" + d.value + "</span><button onclick=\"deleteItem('"
+                + d.field + "','" + d.operation + "','" + d.value + "')\">X</button> ";
+        })
+    ;
 }
 
 function deleteItem(field, op, value) {
     filterList.removeFilter({field: field, operation: op, value: value});
     drawChars(parsedData);
 }
+
 function drawChars(data) {
     d3.selectAll("svg").remove().exit();
     realVotersSVG(data);
@@ -110,87 +111,87 @@ function drawChars(data) {
 }
 
 function candidatesSVG(data) {
-    var transformedData = transformVotersData(data);
-    var xDomain = ["NSPP", "18", "30", "40", "50", "60", "70"];
-    var yDomain = ["S", "2", "1", "NSPP"];
-    var title = "Candidates Approved";
-    var dbc = new DiscreteBubbleChart(title, "#svg_container4", xDomain, yDomain);
+    const transformedData = transformVotersData(data);
+    const xDomain = ["NSPP", "18", "30", "40", "50", "60", "70"];
+    const yDomain = ["S", "2", "1", "NSPP"];
+    const title = "Candidates Approved";
+    const dbc = new DiscreteBubbleChart(title, "#svg_container4", xDomain, yDomain);
     dbc.itemInflater(transformedData, candidatesBubbleListener, d3.select("#relative_size").node().value === "true");
 }
 
 function transformVotersData(data) {
-    var filteredData = filterList.applyFilters(data);
-    var groups = d3.nest()
-            .key(function (d) {
-                return d["ETUDE"];
-            })
-            .key(function (d) {
-                return d["AGE"];
-            })
-            .key(function (d) {
-                return d["VOTE"];
-            })
-            .entries(filteredData);
+    const filteredData = filterList.applyFilters(data);
+    const groups = d3.nest()
+        .key(function (d) {
+            return d["ETUDE"];
+        })
+        .key(function (d) {
+            return d["AGE"];
+        })
+        .key(function (d) {
+            return d["VOTE"];
+        })
+        .entries(filteredData);
     return groups;
 }
 
 function evalSVG(data) {
-    var transformedData = transformEvalData(data);
-    var yDomain = [0, transformedData.max];
-    var title = "Evaluation votes";
+    const transformedData = transformEvalData(data);
+    const yDomain = [0, transformedData.max];
+    let title = "Evaluation votes";
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
-    var newData = toArray(transformedData, candidatesKeys);
-    var sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
+    const newData = toArray(transformedData, candidatesKeys);
+    const sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
     sbc.composedItemInflater(newData, evaluationListeners);
 }
 
 
 function approvalSVG(data) {
-    var transformedData = transformApprovalData(data);
-    var yDomain = [0, transformedData.max];
-    var title = "Approval votes";
+    const transformedData = transformApprovalData(data);
+    const yDomain = [0, transformedData.max];
+    let title = "Approval votes";
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
-    var newData = toArray(transformedData, candidatesKeys);
-    var sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
+    const newData = toArray(transformedData, candidatesKeys);
+    const sbc = new SimpleBarChart(title, "#svg_container2", candidatesKeys, yDomain);
     sbc.itemInflater(newData, voterListeners);
 }
 
 function realVotersSVG(data) {
-    var xDomain = candidatesKeys.slice();
+    const xDomain = candidatesKeys.slice();
     xDomain.push("B");
     xDomain.push("NSPP");
-    var transformedData = transformRealVotersData(data);
-    var yDomain = [0, d3.max(transformedData[0], function (d) {
-            return d.data.value;
-        })];
-    var title = "Real Votes";
+    const transformedData = transformRealVotersData(data);
+    const yDomain = [0, d3.max(transformedData[0], function (d) {
+        return d.data.value;
+    })];
+    let title = "Real Votes";
     if (filterList.toString() !== "") {
         title += " " + candidatesMap[filterList.elements[0].value].name;
     }
 
-    var sbc = new SimpleBarChart(title, "#svg_container1", xDomain, yDomain);
+    const sbc = new SimpleBarChart(title, "#svg_container1", xDomain, yDomain);
     sbc.itemInflater(transformedData, voterListeners);
 }
 
 function genderSVG(data) {
-    var xDomain = ["F", "M", "NSPP"];
-    var transformedData = transformNominalData(data, "SEXE");
-    var title = "Gender";
-    var newData = toSimpleArray(transformedData, xDomain, "SEXE");
-    var genderPie = new PieChart(title, "#svg_container1");
+    const xDomain = ["F", "M", "NSPP"];
+    const transformedData = transformNominalData(data, "SEXE");
+    const title = "Gender";
+    const newData = toSimpleArray(transformedData, xDomain, "SEXE");
+    const genderPie = new PieChart(title, "#svg_container1");
     genderPie.itemInflater(newData, voterListeners);
 }
 
 function educationSVG(data) {
-    var xDomain = ["1", "2", "S", "NSPP"];
-    var transformedData = transformNominalData(data, "ETUDE");
-    var title = "Scholar Level";
-    var newData = toSimpleArray(transformedData, xDomain, "ETUDE");
-    var educationPie = new PieChart(title, "#svg_container1");
+    const xDomain = ["1", "2", "S", "NSPP"];
+    const transformedData = transformNominalData(data, "ETUDE");
+    const title = "Scholar Level";
+    const newData = toSimpleArray(transformedData, xDomain, "ETUDE");
+    const educationPie = new PieChart(title, "#svg_container1");
     educationPie.itemInflater(newData, voterListeners);
 }
 
@@ -199,13 +200,13 @@ function transformApprovalData(data) {
 }
 
 function transformEvalData(data) {
-    var filteredData = filterList.applyFilters(data);
-    var summary = {max: -1, sum: 0, count: 0};
-    var prefix = "EV_";
-    var transform = filteredData.reduce(function (acc, d) {
-        var key;
-        var value;
-        for (var i = 0; i < candidatesKeys.length; i++) {
+    const filteredData = filterList.applyFilters(data);
+    const summary = {max: -1, sum: 0, count: 0};
+    const prefix = "EV_";
+    const transform = filteredData.reduce(function (acc, d) {
+        let key;
+        let value;
+        for (let i = 0; i < candidatesKeys.length; i++) {
             key = candidatesKeys[i];
             value = d[prefix + key];
             if (typeof (acc[key]) == "undefined") {
@@ -234,12 +235,13 @@ function transformEvalData(data) {
     }, summary);
     return transform;
 }
+
 function transformData(data, prefix) {
-    var filteredData = filterList.applyFilters(data);
-    var summary = {max: -1, sum: 0, count: 0};
-    var transform = filteredData.reduce(function (acc, d) {
-        var key;
-        for (var i = 0; i < candidatesKeys.length; i++) {
+    const filteredData = filterList.applyFilters(data);
+    const summary = {max: -1, sum: 0, count: 0};
+    const transform = filteredData.reduce(function (acc, d) {
+        let key;
+        for (let i = 0; i < candidatesKeys.length; i++) {
             key = candidatesKeys[i];
             if (typeof (acc[key]) == "undefined") {
                 acc[key] = 0;
@@ -257,24 +259,24 @@ function transformData(data, prefix) {
 }
 
 function transformRealVotersData(data) {
-    var filteredData = filterList.applyFilters(data);
-    var groups = d3.nest()
-            .key(function (d) {
-                return d["VOTE"];
-            })
-            .rollup(function (v) {
-                return v.length;
-            })
-            .entries(filteredData);
-    var series = d3.stack().keys(["value"])(groups);
+    const filteredData = filterList.applyFilters(data);
+    const groups = d3.nest()
+        .key(function (d) {
+            return d["VOTE"];
+        })
+        .rollup(function (v) {
+            return v.length;
+        })
+        .entries(filteredData);
+    const series = d3.stack().keys(["value"])(groups);
     return series;
 }
 
 function transformNominalData(data, key) {
-    var filteredData = filterList.applyFilters(data);
-    var summary = {max: -1, sum: 0, count: 0};
-    var transform = filteredData.reduce(function (acc, d) {
-        var value = d[key];
+    const filteredData = filterList.applyFilters(data);
+    const summary = {max: -1, sum: 0, count: 0};
+    const transform = filteredData.reduce(function (acc, d) {
+        const value = d[key];
         if (typeof (acc[value]) == "undefined") {
             acc[value] = 0;
         }
@@ -291,52 +293,52 @@ function candidatesBubbleListener(element) {
     element.on("click", function (d) {
         showDetails(d);
     })
-            .on('mouseover', function (d) {
-                tooltipDiv.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                tooltipDiv.html("<img class='round' src='./images/" + candidatesMap[d["key"]].image + "'>"
-                        + "<span class='axis-title'>Count: </span> " + d["values"].length
-                        + "<br /> <span>Name: " + candidatesMap[d["key"]].name + "</span>")
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-            })
-            .on('mouseout', function () {
-                tooltipDiv.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-            });
+        .on('mouseover', function (d) {
+            tooltipDiv.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltipDiv.html("<img class='round' src='./images/" + candidatesMap[d["key"]].image + "'>"
+                + "<span class='axis-title'>Count: </span> " + d["values"].length
+                + "<br /> <span>Name: " + candidatesMap[d["key"]].name + "</span>")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on('mouseout', function () {
+            tooltipDiv.transition()
+                .duration(500)
+                .style("opacity", 0);
+        });
 }
 
 function voterListeners(element) {
     element.on("click", function (d) {
         showDetails(d.data);
     })
-            .on('mouseover', function (d) {
-                tooltipDiv.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                tooltipDiv.html("<img class='round' src='./images/" + candidatesMap[d.data["key"]].image + "'>"
-                        + "<span class='axis-title'>Count: </span> " + d.data["value"]
-                        + "<br /> <span>Name: " + candidatesMap[d.data["key"]].name + "</span>")
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-            })
-            .on('mouseout', function () {
-                tooltipDiv.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-            })
-            .append("svg:title")
-            .text(function (d) {
-                return "observation: " + d.data["value"];
-            });
+        .on('mouseover', function (d) {
+            tooltipDiv.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltipDiv.html("<img class='round' src='./images/" + candidatesMap[d.data["key"]].image + "'>"
+                + "<span class='axis-title'>Count: </span> " + d.data["value"]
+                + "<br /> <span>Name: " + candidatesMap[d.data["key"]].name + "</span>")
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on('mouseout', function () {
+            tooltipDiv.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
+        .append("svg:title")
+        .text(function (d) {
+            return "observation: " + d.data["value"];
+        });
 }
 
 function evaluationListeners(element) {
     element.on("click", function (d) {
-        var data = d.data;
-        var lowerBound, upperBound;
+        const data = d.data;
+        let lowerBound, upperBound;
         switch (data.key) {
             case "D":
                 lowerBound = 0;
@@ -354,23 +356,23 @@ function evaluationListeners(element) {
         filterList.addFilter({field: data.field, operation: "lt", value: upperBound});
         showDetails({field: data.field, operation: "ge", key: lowerBound});
     })
-            .on('mouseover', function (d) {
-                tooltipDiv.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                tooltipDiv.html("<span class='axis-title'>Count: </span> " + d[1])
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-            })
-            .on('mouseout', function () {
-                tooltipDiv.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-            })
-            .append("svg:title")
-            .text(function (d) {
-                return "observation: " + d[1];
-            });
+        .on('mouseover', function (d) {
+            tooltipDiv.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltipDiv.html("<span class='axis-title'>Count: </span> " + d[1])
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
+        })
+        .on('mouseout', function () {
+            tooltipDiv.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
+        .append("svg:title")
+        .text(function (d) {
+            return "observation: " + d[1];
+        });
 }
 
 
@@ -386,31 +388,34 @@ function showDetails(element) {
 }
 
 function downloadData() {
-    var filteredData = filterList.applyFilters(parsedData);
+    const filteredData = filterList.applyFilters(parsedData);
     downloadObjectAsJson(filteredData, "votes");
 }
 
+/**
+ * @return {string}
+ */
 function StringValueOf(operator) {
     switch (operator) {
         case "eq":
-            return"=";
+            return "=";
         case "neq":
-            return"!=";
+            return "!=";
         case "lt":
-            return"&lt;";
+            return "&lt;";
         case "le":
-            return"&lt;=";
+            return "&lt;=";
         case "gt":
-            return"&gt;";
+            return "&gt;";
         case "ge":
-            return"&gt;=";
+            return "&gt;=";
         default:
             return operator;
     }
 }
 
 function getCandidatesMap() {
-    var map = [];
+    const map = [];
     map["1"] = {
         id: "1",
         color: "#65DBFF",

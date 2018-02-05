@@ -8,25 +8,25 @@ function PieChart(title, containerID, svgHolder) {
     }
     this.svgHolder.addChartTitle(title);
     this.itemInflater = function (data, elementListener) {
-        var self = this;
-        var data2 = data[0];
-        var radius = Math.min(this.svgHolder.graphWidth, this.svgHolder.graphHeight) / 2;
-        var pie = d3.pie()
-                .sort(null)
-                .value(function (d) {
-                    return d["value"];
-                });
-        var path = d3.arc()
-                .outerRadius(radius - 10)
-                .innerRadius(0);
-        var label = d3.arc()
-                .outerRadius(radius - 60)
-                .innerRadius(radius - 40);
+        const self = this;
+        const data2 = data[0];
+        const radius = Math.min(this.svgHolder.graphWidth, this.svgHolder.graphHeight) / 2;
+        const pie = d3.pie()
+            .sort(null)
+            .value(function (d) {
+                return d["value"];
+            });
+        const path = d3.arc()
+            .outerRadius(radius - 10)
+            .innerRadius(0);
+        const label = d3.arc()
+            .outerRadius(radius - 60)
+            .innerRadius(radius - 40);
 
-        var displayElement = this.svgHolder.mainGroup.selectAll(".arc")
-                .data(pie(data2))
-                .enter().append("g")
-                .attr("class", "arc");
+        const displayElement = this.svgHolder.mainGroup.selectAll(".arc")
+            .data(pie(data2))
+            .enter().append("g")
+            .attr("class", "arc");
 
         displayElement.append("path")
                 .attr("transform",
@@ -42,7 +42,7 @@ function PieChart(title, containerID, svgHolder) {
         displayElement.append("text")
                 .attr("class", "arc-label")
                 .attr("transform", function (d) {
-                    var centroid = label.centroid(d);
+                    const centroid = label.centroid(d);
                     centroid[0] = centroid[0] + self.svgHolder.graphWidth / 2;
                     centroid[1] = centroid[1] + self.svgHolder.graphHeight / 2;
                     return "translate(" + centroid + ")";
@@ -56,7 +56,7 @@ function PieChart(title, containerID, svgHolder) {
                 .transition()
                 .duration(1000)
                 .attrTween("d", function (d) {
-                    var interpolate = d3.interpolate(d.startAngle, d.endAngle);
+                    const interpolate = d3.interpolate(d.startAngle, d.endAngle);
                     return function (t) {
                         d.endAngle = interpolate(t);
                         return path.startAngle(d.startAngle).endAngle(d.endAngle)();

@@ -24,90 +24,76 @@ function SimpleBarChart(title,
     this.svgHolder.addLeftAxis(this.yAxis, yTitle);
 
     this.itemInflater = function (data, elementListener) {
-        var self = this;
-        var displayElement = this.svgHolder.mainGroup
-                .selectAll("g")
-                .data(data)
-                .enter().append("g")
-                .attr("class", "series")
-                .selectAll("rect")
-                .data(function (d) {
-                    return d;
-                })
-                .enter().append("rect")
-                .attr("class", function (d) {
-                    return "c-" + d.data["key"];
-                })
-                .attr("height", function (d) {
-                    return 0;
-                })
-                .attr("width", this.xAxis.bandwidth())
-                .attr("transform", function (d) {
-                    return "translate(" + self.xAxis(d.data["key"]) + "," + self.svgHolder.graphHeight + ")";
-                })
-                ;
+        const self = this;
+        const displayElement = this.svgHolder.mainGroup
+            .selectAll("g")
+            .data(data)
+            .enter().append("g")
+            .attr("class", "series")
+            .selectAll("rect")
+            .data(function (d) {
+                return d;
+            })
+            .enter().append("rect")
+            .attr("class", d => "c-" + d.data["key"])
+            .attr("height", d => 0)
+            .attr("width", this.xAxis.bandwidth())
+            .attr("transform", function (d) {
+                return "translate(" + self.xAxis(d.data["key"]) + "," + self.svgHolder.graphHeight + ")";
+            })
+        ;
         displayElement
                 .transition()
                 .duration(1000)
-                .attr("transform", function (d) {
-                    return "translate(" + self.xAxis(d.data["key"]) + "," + self.yAxis(d[1]) + ")";
-                })
-                .attr("height", function (d) {
-                    return self.yAxis(d[0]) - self.yAxis(d[1]);
-                });
+            .attr("transform", d => "translate(" + self.xAxis(d.data["key"]) + "," + self.yAxis(d[1]) + ")")
+            .attr("height", d => self.yAxis(d[0]) - self.yAxis(d[1]));
         elementListener(displayElement);
     };
 
     this.composedItemInflater = function (data, elementListener) {
-        var self = this;
-        var subAxis = d3.scaleBand()
-                .paddingInner(0.05);
+        const self = this;
+        const subAxis = d3.scaleBand()
+            .paddingInner(0.05);
 
         subAxis.domain(["D", "N", "A"]).rangeRound([0, self.xAxis.bandwidth()]);
-        var displayElement = this.svgHolder.mainGroup
-                .selectAll("g")
-                .data(data)
-                .enter().append("g")
-                .attr("class", "series")
-                .selectAll("rect")
-                .data(function (d) {
-                    return d;
-                })
-                .enter()
-                .append("g")
-                .attr("transform", function (d) {
-                    var temp = self.xAxis(d.data.key);
-                    return "translate(" + temp + ",0)";
-                })
-                .selectAll("rect")
-                .data(function (d) {
-                    var trans = toArray(d.data.value, ["A", "D", "N"], "EV_" + d.data.key);
-                    return trans;
-                })
-                .enter()
-                .selectAll("rect")
-                .data(function (d) {
-                    return d;
-                }).enter()
-                .append("rect")
-                .attr("class", function (d) {
-                    var temp = d.data["key"];
-                    if (temp == "D") {
-                        return "red";
-                    }
-                    if (temp == "A") {
-                        return "green";
-                    }
-                    return "gray";
-                })
-                .attr("height", function (d) {
-                    return self.yAxis(d[0]) - self.yAxis(d[1]);
-                })
-                .attr("width", subAxis.bandwidth())
-                .attr("transform", function (d) {
-                    return "translate(" + subAxis(d.data["key"]) + "," + self.yAxis(d[1]) + ")";
-                })
-                ;
+        const displayElement = this.svgHolder.mainGroup
+            .selectAll("g")
+            .data(data)
+            .enter().append("g")
+            .attr("class", "series")
+            .selectAll("rect")
+            .data(function (d) {
+                return d;
+            })
+            .enter()
+            .append("g")
+            .attr("transform", d => {
+                const temp = self.xAxis(d.data.key);
+                return "translate(" + temp + ",0)";
+            })
+            .selectAll("rect")
+            .data(d => {
+                const trans = toArray(d.data.value, ["A", "D", "N"], "EV_" + d.data.key);
+                return trans;
+            })
+            .enter()
+            .selectAll("rect")
+            .data(d => d).enter()
+            .append("rect")
+            .attr("class", d => {
+                const temp = d.data["key"];
+                if (temp == "D") {
+                    return "red";
+                }
+                if (temp == "A") {
+                    return "green";
+                }
+                return "gray";
+            })
+            .attr("height", d => self.yAxis(d[0]) - self.yAxis(d[1]))
+            .attr("width", subAxis.bandwidth())
+            .attr("transform", d => "translate(" + subAxis(d.data["key"]) + "," + self.yAxis(d[1]) + ")")
+        ;
         elementListener(displayElement);
     };
 }

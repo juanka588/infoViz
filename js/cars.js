@@ -1,12 +1,12 @@
 let MARK_SIZE = 60;
 
-var modal = null;
-var span = null;
+let modal = null;
+let span = null;
 // Define the div for the tooltip
-var tooltipDiv = null;
+let tooltipDiv = null;
 
 let fixedSize = MARK_SIZE / 15.5;
-let symbolSympleCross = function (size) {
+let symbolSimpleCross = function (size) {
     return  "M -" + size + ",0 L " + size + ",0 M 0,-" + size + " L 0," + size;
 };
 
@@ -52,11 +52,11 @@ function addModalLogic(modalId) {
 }
 
 function prepareSVG(data) {
-    var svgHolder = new SVGHolder(800, 600);
+    const svgHolder = new SVGHolder(800, 600);
 
-    var xAxis = d3.scaleLinear().rangeRound([0, svgHolder.graphWidth]);
-    var yAxis = d3.scaleLinear().rangeRound([svgHolder.graphHeight, 0]);
-    var colorAxis = d3.scaleSequential(d3.interpolateBlues);
+    const xAxis = d3.scaleLinear().rangeRound([0, svgHolder.graphWidth]);
+    const yAxis = d3.scaleLinear().rangeRound([svgHolder.graphHeight, 0]);
+    const colorAxis = d3.scaleSequential(d3.interpolateBlues);
 
     colorAxis.domain([1965, 1985]).nice();
 
@@ -67,56 +67,44 @@ function prepareSVG(data) {
     showAxis(svgHolder, xAxis, yAxis);
 
     //add points
-    var symbolsMap = [
+    const symbolsMap = [
         {
             k: "Europe",
             s: d3.symbol()
-                    .size(function (d) {
-                        return MARK_SIZE;
-                    })
-                    .type(function (d) {
-                        return d3.symbolCircle;
-                    })
+                .size(d => MARK_SIZE)
+                .type(d => d3.symbolCircle)
         },
         {
             k: "Japan",
             s: d3.symbol()
-                    .size(function (d) {
-                        return MARK_SIZE;
-                    })
-                    .type(function (d) {
-                        return d3.symbolSquare;
-                    })
+                .size(d => MARK_SIZE)
+                .type(d => d3.symbolSquare)
         },
         {
             k: "USA",
-            s: symbolSympleCross(fixedSize),
+            s: symbolSimpleCross(fixedSize),
         },
     ];
-    symbolsMap.forEach(function (item) {
+    symbolsMap.forEach(item => {
         displayItem(item, svgHolder.mainGroup, data, xAxis, yAxis, colorAxis);
     });
     addLegend(svgHolder, colorAxis);
 }
 function displayItem(e, g, data, xAxis, yAxis, colorAxis) {
-    var displayElement = g.selectAll("g")
-            .data(data)
-            .enter()
-            .filter(function (d) {
-                return d.origin == e.k;
-            })
-            .append("path")
-            .attr("transform", function (d) {
-                return "translate(" + xAxis(d.weight) + "," + yAxis(d.mpg) + ")";
-            })
-            .attr("class", "country " + e.k)
-            .style("stroke", function (d) {
-                return colorAxis(d.year);
-            })
-            .style("fill", function () {
-                return "transparent";
-            })
-            .attr("d", e.s);
+    const displayElement = g.selectAll("g")
+        .data(data)
+        .enter()
+        .filter(function (d) {
+            return d.origin == e.k;
+        })
+        .append("path")
+        .attr("transform", d => "translate(" + xAxis(d.weight) + "," + yAxis(d.mpg) + ")")
+        .attr("class", "country " + e.k)
+        .style("stroke", d => colorAxis(d.year))
+        .style("fill", function () {
+            return "transparent";
+        })
+        .attr("d", e.s);
     addListeners(displayElement);
 }
 
@@ -125,11 +113,11 @@ function zoomed() {
 }
 
 function addListeners(element) {
-    element.on("click", function (d) {
+    element.on("click", d => {
         modal.style.display = "block";
         displayInfo(d);
     })
-            .on('mouseover', function (d) {
+        .on('mouseover', d => {
                 tooltipDiv.transition()
                         .duration(200)
                         .style("opacity", .9);
@@ -139,15 +127,13 @@ function addListeners(element) {
                         .style("top", (d3.event.pageY - 28) + "px");
 
             })
-            .on('mouseout', function () {
+        .on('mouseout', () => {
                 tooltipDiv.transition()
                         .duration(500)
                         .style("opacity", 0);
             })
             .append("svg:title")
-            .text(function (d) {
-                return "observation: " + d.name;
-            });
+        .text(d => "observation: " + d.name);
 }
 
 function showAxis(svgHolder, xAxis, yAxis) {
@@ -158,11 +144,11 @@ function showAxis(svgHolder, xAxis, yAxis) {
 function addLegend(svgHolder, colorAxis) {
     let itemHeight = 30;
     let innerMargin = {left: 20, top: 10};
-    let elements = getLeyendElements(colorAxis);
-    for (var i = 0; i < elements.length; i++) {
-        var markWidth = 20;
-        var x = (svgHolder.width - svgHolder.getRight()) + innerMargin.left;
-        var y = (svgHolder.getTop() + innerMargin.top + itemHeight * i);
+    let elements = getLegendElements(colorAxis);
+    for (let i = 0; i < elements.length; i++) {
+        const markWidth = 20;
+        let x = (svgHolder.width - svgHolder.getRight()) + innerMargin.left;
+        const y = (svgHolder.getTop() + innerMargin.top + itemHeight * i);
         if (elements[i].mark != null) {
             let path = svgHolder.svg.append("path");
             path.attr("transform", function () {
@@ -185,15 +171,15 @@ function addLegend(svgHolder, colorAxis) {
 }
 
 
-function getLeyendElements(colorAxis) {
+function getLegendElements(colorAxis) {
     let elements = [
         {label: "Origin", mark: null},
         {label: "Europe", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolCircle), class: "legend-symbol"},
         {label: "Japan", mark: d3.symbol().size(MARK_SIZE).type(d3.symbolSquare), class: "legend-symbol"},
-        {label: "USA", mark: symbolSympleCross(fixedSize), class: "legend-symbol"},
+        {label: "USA", mark: symbolSimpleCross(fixedSize), class: "legend-symbol"},
         {label: "Year", mark: null}
     ];
-    for (var i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
         elements.push({
             label: "7" + i,
             mark: d3.symbol().size(MARK_SIZE * 2).type(d3.symbolSquare),
@@ -204,22 +190,22 @@ function getLeyendElements(colorAxis) {
     return elements;
 }
 function displayInfo(d) {
-    var nameSpan = document.getElementById("car_name");
-    var weightSpan = document.getElementById("car_weight");
-    var mpgSpan = document.getElementById("car_mpg");
-    var accSpan = document.getElementById("car_acceleration");
-    var cylSpan = document.getElementById("car_cylinders");
-    var displaSpan = document.getElementById("car_displacement");
-    var hpSpan = document.getElementById("car_horsepower");
-    var yearSpan = document.getElementById("car_year");
-    var originSpan = document.getElementById("car_origin");
+    const nameSpan = document.getElementById("car_name");
+    const weightSpan = document.getElementById("car_weight");
+    const mpgSpan = document.getElementById("car_mpg");
+    const accSpan = document.getElementById("car_acceleration");
+    const cylSpan = document.getElementById("car_cylinders");
+    const displacementSpan = document.getElementById("car_displacement");
+    const hpSpan = document.getElementById("car_horsepower");
+    const yearSpan = document.getElementById("car_year");
+    const originSpan = document.getElementById("car_origin");
 
     nameSpan.innerHTML = d.name;
     weightSpan.innerHTML = d.weight;
     mpgSpan.innerHTML = d.mpg;
     accSpan.innerHTML = d.acceleration;
     cylSpan.innerHTML = d.cylinders;
-    displaSpan.innerHTML = d.displacement;
+    displacementSpan.innerHTML = d.displacement;
     hpSpan.innerHTML = d.horsepower;
     yearSpan.innerHTML = d.year;
     originSpan.innerHTML = d.origin;

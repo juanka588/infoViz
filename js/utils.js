@@ -1,14 +1,14 @@
 function loadScript(src) {
-    var newjs = document.createElement("script");
-    newjs.src = src;
-    newjs.type = 'text/javascript';
-    var head = document.getElementsByTagName("head")[0];
-    head.appendChild(newjs);
+    const newJS = document.createElement("script");
+    newJS.src = src;
+    newJS.type = 'text/javascript';
+    const head = document.getElementsByTagName("head")[0];
+    head.appendChild(newJS);
 }
 function downloadObjectAsJson(exportObj, exportName) {
-    var jsonStr = JSON.stringify(exportObj);
-    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonStr);
-    var downloadAnchorNode = document.createElement('a');
+    const jsonStr = JSON.stringify(exportObj);
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonStr);
+    const downloadAnchorNode = document.createElement('a');
     downloadAnchorNode.setAttribute("href", dataStr);
     downloadAnchorNode.setAttribute("download", exportName + ".json");
     downloadAnchorNode.click();
@@ -16,9 +16,9 @@ function downloadObjectAsJson(exportObj, exportName) {
 }
 
 function toArray(obj, properties, field) {
-    var arr = [];
-    var prop;
-    for (var i = 0; i < properties.length; i++) {
+    const arr = [];
+    let prop;
+    for (let i = 0; i < properties.length; i++) {
         prop = properties[i];
         arr.push(
                 {
@@ -32,9 +32,9 @@ function toArray(obj, properties, field) {
 }
 
 function toSimpleArray(obj, properties, field) {
-    var arr = [];
-    var prop;
-    for (var i = 0; i < properties.length; i++) {
+    const arr = [];
+    let prop;
+    for (let i = 0; i < properties.length; i++) {
         prop = properties[i];
         arr.push({
             key: prop,

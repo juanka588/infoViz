@@ -1,6 +1,6 @@
-var tooltipDiv;
-var parsedData;
-var letterMatrix = [];
+let tooltipDiv;
+let parsedData;
+const letterMatrix = [];
 
 window.onload = function () {
     init();
@@ -15,9 +15,9 @@ function loadFromServer() {
     d3.json("./data/words_dictionary.json", onDataLoaded);
 }
 function parseData(string) {
-    var c;
-    var n;
-    for (var i = 0; i < string.length - 1; i++) {
+    let c;
+    let n;
+    for (let i = 0; i < string.length - 1; i++) {
         c = string[i];
         n = string[i + 1];
         if (typeof (letterMatrix[c]) == "undefined") {
@@ -35,8 +35,8 @@ function parseData(string) {
     }
 }
 function addWord() {
-    var words = d3.select("#new_word_input").node().value.split(/\b(\s)/);
-    for (var i = 0; i < words.length; i++) {
+    const words = d3.select("#new_word_input").node().value.split(/\b(\s)/);
+    for (let i = 0; i < words.length; i++) {
         parseData(words[i]);
     }
     console.log(letterMatrix);
@@ -47,7 +47,7 @@ function onDataLoaded(error, data) {
     if (error) {
         throw error;
     }
-    for (var prop in data) {
+    for (let prop in data) {
         parseData(prop);
     }
     console.log(letterMatrix);
@@ -61,22 +61,22 @@ function addControlsListeners() {
 
 function drawChars(data) {
     d3.selectAll("svg").remove().exit();
-    var xDomain = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
-                , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
+    const xDomain = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
+        , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
 
     xDomain.sort(function (a, b) {
-        var na = validateNumber(letterMatrix[a]);
-        var nb = validateNumber(letterMatrix[b]);
+        const na = validateNumber(letterMatrix[a]);
+        const nb = validateNumber(letterMatrix[b]);
         return  na - nb;
     });
-    var yDomain = xDomain.slice();
+    const yDomain = xDomain.slice();
     yDomain.sort(function (a, b) {
-        var na = validateNumber(letterMatrix[a]);
-        var nb = validateNumber(letterMatrix[b]);
+        const na = validateNumber(letterMatrix[a]);
+        const nb = validateNumber(letterMatrix[b]);
         return  nb - na;
     });
-    var hm = new HeatMap("Letters Alignment", "#svg_container1", xDomain, yDomain);
-    var nData = toSimpleArray(data, xDomain, "let");
+    const hm = new HeatMap("Letters Alignment", "#svg_container1", xDomain, yDomain);
+    const nData = toSimpleArray(data, xDomain, "let");
     hm.itemInflater(nData, heatListener);
 }
 

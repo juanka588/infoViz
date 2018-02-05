@@ -15,13 +15,13 @@ function FilterList(render) {
     };
 
     this.removeFilter = function (filterObj) {
-        var index = this.getElementIndex(filterObj);
+        const index = this.getElementIndex(filterObj);
         this.elements.splice(index, 1);
         this.render(this.elements);
     };
     this.getElementIndex = function (obj) {
-        var curr;
-        for (var i = 0; i < this.elements.length; i++) {
+        let curr;
+        for (let i = 0; i < this.elements.length; i++) {
             curr = this.elements[i];
             if (curr.value === obj.value && curr.operation === obj.operation && curr.field === obj.field) {
                 return i;
@@ -37,11 +37,11 @@ function FilterList(render) {
         if (this.elements.length < 1) {
             return data;
         }
-        var self = this;
-        var transform = data.filter(function (d) {
-            var cond = true;
-            var filter;
-            for (var i = 0; i < self.elements.length; i++) {
+        const self = this;
+        const transform = data.filter(function (d) {
+            let cond = true;
+            let filter;
+            for (let i = 0; i < self.elements.length; i++) {
                 filter = self.elements[i];
                 switch (self.filterOperation) {
                     case "AND":
@@ -58,8 +58,8 @@ function FilterList(render) {
     };
 
     this.applyFilter = function (filter, d) {
-        var actual = d[filter.field];
-        var expected = filter.value;
+        const actual = d[filter.field];
+        const expected = filter.value;
         switch (filter.operation) {
             case "gt":
                 return actual > expected;
