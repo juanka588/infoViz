@@ -13,6 +13,15 @@ function init() {
 }
 function loadFromServer() {
     d3.json("./data/words_dictionary.json", onDataLoaded);
+    d3.request("/data/compact.txt")
+            .mimeType("text/plain")
+            .response(data => data.response.split("\n"))
+            .get(data => {
+                console.log(data);
+                for (var i = 0; i < data.length; i++) {
+                    parseData(data[i]);
+                }
+            });
 }
 function parseData(string) {
     let c;
@@ -20,18 +29,21 @@ function parseData(string) {
     for (let i = 0; i < string.length - 1; i++) {
         c = string[i];
         n = string[i + 1];
-        if (typeof (letterMatrix[c]) == "undefined") {
-            letterMatrix[c] = [];
-            letterMatrix[c]["sum"] = 0;
-            letterMatrix["sum"] = [];
+        if (typeof (letterMatrix[i]) == "undefined") {
+            letterMatrix[i] = [];
         }
-        if (typeof (letterMatrix[c][n]) == "undefined") {
-            letterMatrix[c][n] = 0;
-            letterMatrix["sum"][n] = 0;
+        if (typeof (letterMatrix[i][c]) == "undefined") {
+            letterMatrix[i][c] = [];
+            letterMatrix[i][c]["sum"] = 0;
+            letterMatrix[i]["sum"] = [];
         }
-        letterMatrix[c][n] = letterMatrix[c][n] + 1;
-        letterMatrix["sum"][n] = letterMatrix["sum"][n] + 1;
-        letterMatrix[c]["sum"] = letterMatrix[c]["sum"] + 1;
+        if (typeof (letterMatrix[i][c][n]) == "undefined") {
+            letterMatrix[i][c][n] = 0;
+            letterMatrix[i]["sum"][n] = 0;
+        }
+        letterMatrix[i][c][n] = letterMatrix[i][c][n] + 1;
+        letterMatrix[i]["sum"][n] = letterMatrix[i]["sum"][n] + 1;
+        letterMatrix[i][c]["sum"] = letterMatrix[i][c]["sum"] + 1;
     }
 }
 function addWord() {
@@ -61,21 +73,27 @@ function addControlsListeners() {
 
 function drawChars(data) {
     d3.selectAll("svg").remove().exit();
+    for (var i = 0; i < data.length && i < 12; i++) {
+        drawChar(data[i], i + 1);
+    }
+}
+
+function drawChar(data, idx) {
     const xDomain = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
-        , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
+                , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
 
     xDomain.sort(function (a, b) {
-        const na = validateNumber(letterMatrix[a]);
-        const nb = validateNumber(letterMatrix[b]);
+        const na = validateNumber(data[a]);
+        const nb = validateNumber(data[b]);
         return  na - nb;
     });
     const yDomain = xDomain.slice();
     yDomain.sort(function (a, b) {
-        const na = validateNumber(letterMatrix[a]);
-        const nb = validateNumber(letterMatrix[b]);
+        const na = validateNumber(data[a]);
+        const nb = validateNumber(data[b]);
         return  nb - na;
     });
-    const hm = new HeatMap("Letters Alignment", "#svg_container1", xDomain, yDomain);
+    const hm = new HeatMap("Letters Alignment", "#svg_container" + idx, xDomain, yDomain);
     const nData = toSimpleArray(data, xDomain, "let");
     hm.itemInflater(nData, heatListener);
 }

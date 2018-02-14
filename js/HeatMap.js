@@ -6,9 +6,9 @@ function HeatMap(title,
         yTitle = "Letters",
         svgHolder) {
     if (typeof (svgHolder) == "undefined") {
-        this.svgHolder = new SVGHolder(700, 500, containerID
-                , {top: 20, right: 20, bottom: 20, left: 20}
-        , {top: 20, right: 0, bottom: 60, left: 70});
+        this.svgHolder = new SVGHolder(500, 500, containerID
+                , {top: 10, right: 10, bottom: 10, left: 10}
+        , {top: 20, right: 0, bottom: 50, left: 50});
     } else {
         this.svgHolder = svgHolder;
     }
