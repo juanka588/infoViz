@@ -1,3 +1,8 @@
 .graph-container div{
     display: inline-flex;
 }
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
+}

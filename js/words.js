@@ -1,6 +1,8 @@
 let tooltipDiv;
 let parsedData;
 const letterMatrix = [];
+const chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
+            , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
 
 window.onload = function () {
     init();
@@ -76,12 +78,33 @@ function drawChars(data) {
     for (var i = 0; i < data.length && i < 12; i++) {
         drawChar(data[i], i + 1);
     }
+    var c;
+    for (var i = 0; i < chars.length; i++) {
+        c = chars[i];
+        const lcc = new LineCurveChart("Position Distrib", "#svg_container" + c.toUpperCase(), [-1, 16], c.toUpperCase());
+        let charDistribution = getSeriesFor(data, c);
+        lcc.itemInflater(charDistribution, heatListener);
+    }
+}
+
+function getSeriesFor(data, char) {
+    let series = [];
+    let val;
+    for (var i = 0; i < data.length; i++) {
+        val = data[i][char];
+        if (!val) {
+            val = [];
+            val[i] = [];
+            val[i][char] = [];
+            val[i][char]["sum"] = 0;
+        }
+        series.push({pos: i, value: val["sum"]});
+    }
+    return series;
 }
 
 function drawChar(data, idx) {
-    const xDomain = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
-                , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
-
+    const xDomain = chars.slice();
     xDomain.sort(function (a, b) {
         const na = validateNumber(data[a]);
         const nb = validateNumber(data[b]);
@@ -96,6 +119,8 @@ function drawChar(data, idx) {
     const hm = new HeatMap("Letters Alignment", "#svg_container" + idx, xDomain, yDomain);
     const nData = toSimpleArray(data, xDomain, "let");
     hm.itemInflater(nData, heatListener);
+
+
 }
 
 function heatListener() {
