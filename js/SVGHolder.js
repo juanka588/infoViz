@@ -1,10 +1,8 @@
-function SVGHolder(
-        width = 800
-        , height = 600
-        , containerID = "#svg_container"
-        , margin = {top: 20, right: 20, bottom: 20, left: 20}
-, padding = {top: 0, right: 150, bottom: 80, left: 60}
-) {
+function SVGHolder(width = 800
+    , height = 600
+    , containerID = "#svg_container"
+    , margin = {top: 20, right: 20, bottom: 20, left: 20}
+    , padding = {top: 0, right: 150, bottom: 80, left: 60}) {
     this.margin = margin;
     this.padding = padding;
     this.width = width;
@@ -17,77 +15,83 @@ function SVGHolder(
 
     this.build = function () {
         this.svg = d3.select(containerID)
-                .append("svg")
-                .attr("width", this.width)
-                .attr("height", this.height);
+            .append("svg")
+            .attr("width", this.width)
+            .attr("height", this.height);
         this.mainGroup = this.svg.append("g")
-                .attr("transform", "translate("
-                        + this.getLeft()
-                        + ","
-                        + this.getTop()
-                        + ")");
+            .attr("transform", "translate("
+                + this.getLeft()
+                + ","
+                + this.getTop()
+                + ")");
     };
 
     this.showDebug = function () {
         this.svg.attr("class", "debug");
         this.svg.append("rect")
-                .attr("x", this.margin.left)
-                .attr("y", this.margin.top)
-                .attr("width", this.width - this.margin.left - this.margin.right)
-                .attr("height", this.height - this.margin.top - this.margin.bottom)
-                .attr("fill", "blue")
-                .attr("fill-opacity", "0.3")
-                ;
+            .attr("x", this.margin.left)
+            .attr("y", this.margin.top)
+            .attr("width", this.width - this.margin.left - this.margin.right)
+            .attr("height", this.height - this.margin.top - this.margin.bottom)
+            .attr("fill", "blue")
+            .attr("fill-opacity", "0.3")
+        ;
         this.mainGroup.append("rect")
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("width", this.graphWidth)
-                .attr("height", this.graphHeight)
-                .attr("fill", "red")
-                .attr("fill-opacity", "0.3")
-                ;
+            .attr("x", 0)
+            .attr("y", 0)
+            .attr("width", this.graphWidth)
+            .attr("height", this.graphHeight)
+            .attr("fill", "red")
+            .attr("fill-opacity", "0.3")
+        ;
     };
 
     this.addBottomAxis = function (xAxis, title) {
         this.svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate("
-                        + this.getLeft()
-                        + ","
-                        + (this.graphHeight + this.getTop())
-                        + ")")
-                .call(d3.axisBottom(xAxis));
+            .attr("class", "x axis")
+            .attr("transform", "translate("
+                + this.getLeft()
+                + ","
+                + (this.graphHeight + this.getTop())
+                + ")")
+            .call(d3.axisBottom(xAxis));
+        if (!title || "" === title) {
+            return;
+        }
         this.svg.append("text")
-                .attr("text-anchor", "middle")
-                .attr("class", "axis-title")
-                .attr("transform", "translate("
-                        + this.getMiddleX()
-                        + ","
-                        + (this.height - this.margin.bottom - this.padding.bottom / 2)
-                        + ")")
-                .text(title);
+            .attr("text-anchor", "middle")
+            .attr("class", "axis-title")
+            .attr("transform", "translate("
+                + this.getMiddleX()
+                + ","
+                + (this.height - this.margin.bottom - this.padding.bottom / 2)
+                + ")")
+            .text(title);
     };
 
     this.addLeftAxis = function (yAxis, title) {
         this.svg.append("g")
-                .attr("class", "y axis")
-                .attr("transform", "translate("
-                        + this.getLeft()
-                        + ","
-                        + this.getTop()
-                        + ")")
-                .attr("text", "mpg")
-                .call(d3.axisLeft(yAxis));
+            .attr("class", "y axis")
+            .attr("transform", "translate("
+                + this.getLeft()
+                + ","
+                + this.getTop()
+                + ")")
+            .attr("text", "mpg")
+            .call(d3.axisLeft(yAxis));
 
+        if (!title || "" === title) {
+            return;
+        }
         this.svg.append("text")
-                .attr("text-anchor", "middle")
-                .attr("class", "axis-title")
-                .attr("transform", "translate("
-                        + (this.margin.left + this.padding.left / 2)
-                        + ","
-                        + this.getMiddleY()
-                        + ")rotate(-90)")
-                .text(title);
+            .attr("text-anchor", "middle")
+            .attr("class", "axis-title")
+            .attr("transform", "translate("
+                + (this.margin.left + this.padding.left / 2)
+                + ","
+                + this.getMiddleY()
+                + ")rotate(-90)")
+            .text(title);
     };
 
     this.getLeft = function () {
@@ -103,27 +107,30 @@ function SVGHolder(
         return this.padding.bottom + this.margin.bottom;
     };
     this.getMiddleX = function () {
-        return  this.graphWidth / 2 + this.getLeft();
+        return this.graphWidth / 2 + this.getLeft();
     };
     this.getMiddleY = function () {
-        return  this.graphHeight / 2 + this.getTop();
+        return this.graphHeight / 2 + this.getTop();
     };
 
     this.enableZoom = function (callback) {
         this.svg.call(d3.zoom()
-                .scaleExtent([1 / 2, 8])
-                .on("zoom", callback));
+            .scaleExtent([1 / 2, 8])
+            .on("zoom", callback));
     };
     this.addChartTitle = function (title) {
+        if (!title || "" === title) {
+            return;
+        }
         this.svg.append("text")
-                .attr("text-anchor", "middle")
-                .attr("class", "axis-title")
-                .attr("transform", "translate("
-                        + this.getMiddleX()
-                        + ","
-                        + (this.margin.top + this.padding.top / 2)
-                        + ")")
-                .text(title);
+            .attr("text-anchor", "middle")
+            .attr("class", "axis-title")
+            .attr("transform", "translate("
+                + this.getMiddleX()
+                + ","
+                + (this.margin.top + this.padding.top / 2)
+                + ")")
+            .text(title);
     };
 
     this.build();

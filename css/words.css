@@ -6,3 +6,11 @@
     stroke: steelblue;
     stroke-width: 2px;
 }
+
+.data-point {
+    fill: steelblue;
+}
+
+.data-point:hover {
+    fill: #FF9933;
+}

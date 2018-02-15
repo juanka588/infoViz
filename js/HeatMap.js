@@ -1,26 +1,26 @@
 function HeatMap(title,
-        containerID,
-        xDomain,
-        yDomain,
-        xTitle = "Letters",
-        yTitle = "Letters",
-        svgHolder) {
+                 containerID,
+                 xDomain,
+                 yDomain,
+                 xTitle,
+                 yTitle,
+                 svgHolder) {
     if (typeof (svgHolder) == "undefined") {
-        this.svgHolder = new SVGHolder(500, 500, containerID
-                , {top: 10, right: 10, bottom: 10, left: 10}
-        , {top: 20, right: 0, bottom: 50, left: 50});
+        this.svgHolder = new SVGHolder(380, 380, containerID
+            , {top: 10, right: 10, bottom: 10, left: 10}
+            , {top: 30, right: 0, bottom: 10, left: 10});
     } else {
         this.svgHolder = svgHolder;
     }
     this.svgHolder.addChartTitle(title);
     this.xAxis = d3.scaleBand()
-            .rangeRound([0, this.svgHolder.graphWidth])
-            .paddingInner(0.05)
-            .align(0.1);
+        .rangeRound([0, this.svgHolder.graphWidth])
+        .paddingInner(0.05)
+        .align(0.1);
     this.yAxis = d3.scaleBand()
-            .rangeRound([0, this.svgHolder.graphHeight])
-            .paddingInner(0.05)
-            .align(0.1);
+        .rangeRound([0, this.svgHolder.graphHeight])
+        .paddingInner(0.05)
+        .align(0.1);
     this.xAxis.domain(xDomain);
     this.yAxis.domain(yDomain);
 
@@ -74,24 +74,24 @@ function HeatMap(title,
 
         displayGroup
             .on('mouseover', d => {
-                    tooltipDiv.transition()
-                            .duration(200)
-                            .style("opacity", .9);
-                    tooltipDiv.html(
-                            "<span class='axis-title'>Source: </span> " + d.parent
-                            +
-                            "<br /><span class='axis-title'>Target: </span> " + d.key
-                            +
-                            "<br /><span class='axis-title'>Count: </span> " + d.value)
-                            .style("left", (d3.event.pageX) + "px")
-                            .style("top", (d3.event.pageY - 28) + "px");
-                })
+                tooltipDiv.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                tooltipDiv.html(
+                    "<span class='axis-title'>Source: </span> " + d.parent
+                    +
+                    "<br /><span class='axis-title'>Target: </span> " + d.key
+                    +
+                    "<br /><span class='axis-title'>Count: </span> " + d.value)
+                    .style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+            })
             .on('mouseout', () => {
-                    tooltipDiv.transition()
-                            .duration(500)
-                            .style("opacity", 0);
-                })
-                ;
+                tooltipDiv.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            })
+        ;
         elementListener(displayGroup);
         displayGroup.append("svg:title").text(d => "value: " + d.value);
     };
