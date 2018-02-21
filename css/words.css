@@ -1,6 +1,7 @@
-.graph-container div{
+.graph-container div {
     display: inline-flex;
 }
+
 .line {
     fill: none;
     stroke: steelblue;
@@ -13,4 +14,8 @@
 
 .data-point:hover {
     fill: #FF9933;
+}
+
+#max_size_label, #min_size_label {
+    padding: 20px;
 }

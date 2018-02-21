@@ -5,6 +5,8 @@ const chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
     , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
 const letterFreq = [];
 
+let MAX_LENGTH = -1;
+
 window.onload = function () {
     init();
 };
@@ -13,6 +15,8 @@ function init() {
     tooltipDiv = d3.select("body").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0);
+
+    addControlsListeners();
 }
 
 function loadFromServer() {
@@ -28,42 +32,56 @@ function loadFromServer() {
         });
 }
 
+function addIncidentChar(pos, src, target) {
+    if (typeof (letterMatrix[pos]) == "undefined") {
+        letterMatrix[pos] = [];
+    }
+    if (typeof (letterMatrix[pos][src]) == "undefined") {
+        letterMatrix[pos][src] = [];
+        letterMatrix[pos][src]["sum"] = 0;
+        letterMatrix[pos]["sum"] = [];
+    }
+    if (typeof (letterMatrix[pos][src][target]) == "undefined") {
+        letterMatrix[pos][src][target] = 0;
+        letterMatrix[pos]["sum"][target] = 0;
+    }
+    letterMatrix[pos][src][target] = letterMatrix[pos][src][target] + 1;
+    letterMatrix[pos]["sum"][target] = letterMatrix[pos]["sum"][target] + 1;
+    letterMatrix[pos][src]["sum"] = letterMatrix[pos][src]["sum"] + 1;
+}
+
+function addCharPos(pos, c, size) {
+    if (typeof (letterFreq[size]) == "undefined") {
+        letterFreq[size] = [];
+    }
+    if (typeof (letterFreq[size][pos]) == "undefined") {
+        letterFreq[size][pos] = [];
+    }
+    if (typeof (letterFreq[size][pos][c]) == "undefined") {
+        letterFreq[size][pos][c] = 0;
+    }
+    letterFreq[size][pos][c] = letterFreq[size][pos][c] + 1;
+}
+
 function parseData(string) {
     let c;
     let n;
     let i;
-    for (i = 0; i < string.length - 1; i++) {
+    let length = string.length;
+    if (length > MAX_LENGTH) {
+        MAX_LENGTH = length;
+    }
+    for (i = 0; i < length - 1; i++) {
         c = string[i];
         n = string[i + 1];
-        if (typeof (letterMatrix[i]) == "undefined") {
-            letterMatrix[i] = [];
-
-            letterFreq[i] = [];
-        }
-        if (typeof (letterMatrix[i][c]) == "undefined") {
-            letterFreq[i][c] = 0;
-
-            letterMatrix[i][c] = [];
-            letterMatrix[i][c]["sum"] = 0;
-            letterMatrix[i]["sum"] = [];
-        }
-        if (typeof (letterMatrix[i][c][n]) == "undefined") {
-            letterMatrix[i][c][n] = 0;
-            letterMatrix[i]["sum"][n] = 0;
-        }
-        letterMatrix[i][c][n] = letterMatrix[i][c][n] + 1;
-        letterMatrix[i]["sum"][n] = letterMatrix[i]["sum"][n] + 1;
-        letterMatrix[i][c]["sum"] = letterMatrix[i][c]["sum"] + 1;
-
-        letterFreq[i][c] = letterFreq[i][c] + 1;
+        addIncidentChar(i, c, n);
+        addCharPos(i, c, length)
     }
-    if (!letterFreq[i]) {
-        letterFreq[i] = [];
+    if (n) {
+        addCharPos(i, n, length)
+    } else {
+        addCharPos(i, string[0], length)
     }
-    if (!letterFreq[i][n]) {
-        letterFreq[i][n] = 0;
-    }
-    letterFreq[i][n] = letterFreq[i][n] + 1;
 }
 
 function addWord() {
@@ -74,12 +92,13 @@ function addWord() {
     drawChars(letterMatrix);
 }
 
-function drawLetterFreq(data) {
-    var c;
-    for (var i = 0; i < chars.length; i++) {
+function drawLetterFreq(data, min = 1, max = MAX_LENGTH) {
+    d3.select(".letter-container").selectAll("svg").remove().exit();
+    let c;
+    for (let i = 0; i < chars.length; i++) {
         c = chars[i];
-        const lcc = new LineCurveChart("", "#svg_container" + c.toUpperCase(), [-1, 16], c.toUpperCase());
-        let charDistribution = getSeriesFor(data, c);
+        const lcc = new LineCurveChart("", "#svg_container" + c.toUpperCase(), [-1, d3.max([8, max])], c.toUpperCase());
+        let charDistribution = getSeriesFor(data, c, min, max);
         lcc.itemInflater(charDistribution, letterFreqListener);
     }
 }
@@ -91,32 +110,53 @@ function onDataLoaded(error, data) {
     for (let prop in data) {
         parseData(prop);
     }
-    addControlsListeners();
     drawChars(letterMatrix);
 }
 
 function addControlsListeners() {
+    document.getElementById('max_length').addEventListener("change", () =>
+        updateTextInput(document.getElementById('min_length').value
+            , document.getElementById('max_length').value));
+    document.getElementById('min_length').addEventListener("change", () =>
+        updateTextInput(document.getElementById('min_length').value
+            , document.getElementById('max_length').value));
+}
 
+function updateTextInput(min, max) {
+    let minVal = parseFloat(min);
+    let maxVal = parseFloat(max);
+    if (minVal > maxVal) {
+        minVal = maxVal;
+        document.getElementById('min_length').value = minVal;
+    }
+    document.getElementById('max_size_label').innerText = `max word size: ${maxVal}`;
+    document.getElementById('min_size_label').innerText = `min word size: ${minVal}`;
+    drawLetterFreq(letterFreq, minVal, maxVal);
 }
 
 function drawChars(data) {
-    d3.selectAll("svg").remove().exit();
+    d3.select(".incidence-container").selectAll("svg").remove().exit();
     for (var i = 0; i < data.length && i < 12; i++) {
         drawChar(data[i], i + 1);
     }
     drawLetterFreq(letterFreq);
 }
 
-function getSeriesFor(data, char) {
+function getSeriesFor(data, char, minLen, maxLen) {
     let series = [];
     let val;
-    for (var i = 0; i < data.length; i++) {
-        val = data[i][char];
-        if (!val) {
-            val = 0;
+    for (let i = 0; i < maxLen; i++) {
+        val = 0;
+        for (let s = minLen + i; s <= maxLen; s++) {
+            if (data[s]) {
+                if (data[s][i][char]) {
+                    val += data[s][i][char];
+                }
+            }
         }
         series.push({pos: i, value: val});
     }
+
     return series;
 }
 

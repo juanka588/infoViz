@@ -1,86 +1,96 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Word Visualizer</title>
-        <link href="css/theme.css" rel="stylesheet" type="text/css"/>
-        <link href="css/words.css" rel="stylesheet" type="text/css"/>
-        <link href="https://fonts.googleapis.com/css?family=Roboto|Anton" rel="stylesheet">
+<head>
+    <meta charset="utf-8">
+    <title>Word Visualizer</title>
+    <link href="css/theme.css" rel="stylesheet" type="text/css"/>
+    <link href="css/words.css" rel="stylesheet" type="text/css"/>
+    <link href="https://fonts.googleapis.com/css?family=Roboto|Anton" rel="stylesheet">
 
-        <script src="js/utils.js" type="text/javascript"></script>
+    <script src="js/utils.js" type="text/javascript"></script>
 
-        <script src="node_modules/d3/build/d3.min.js" type="text/javascript"></script>
-        <script src="node_modules/d3-color/build/d3-color.min.js" type="text/javascript"></script>
-        <script src="node_modules/d3-interpolate/build/d3-interpolate.min.js" type="text/javascript"></script>
-        <script src="node_modules/d3-scale-chromatic/dist/d3-scale-chromatic.min.js" type="text/javascript"></script>
-        <script>
-            if (typeof (d3) == "undefined" || d3.select == null) {
-                loadScript("https://d3js.org/d3.v4.min.js");
-                loadScript("https://d3js.org/d3-color.v1.min.js");
-                loadScript("https://d3js.org/d3-interpolate.v1.min.js");
-                loadScript("https://d3js.org/d3-scale-chromatic.v1.min.js");
-            }
+    <script src="node_modules/d3/build/d3.min.js" type="text/javascript"></script>
+    <script src="node_modules/d3-color/build/d3-color.min.js" type="text/javascript"></script>
+    <script src="node_modules/d3-interpolate/build/d3-interpolate.min.js" type="text/javascript"></script>
+    <script src="node_modules/d3-scale-chromatic/dist/d3-scale-chromatic.min.js" type="text/javascript"></script>
+    <script>
+        if (typeof (d3) == "undefined" || d3.select == null) {
+            loadScript("https://d3js.org/d3.v4.min.js");
+            loadScript("https://d3js.org/d3-color.v1.min.js");
+            loadScript("https://d3js.org/d3-interpolate.v1.min.js");
+            loadScript("https://d3js.org/d3-scale-chromatic.v1.min.js");
+        }
 
-        </script>
-        <script src="js/SVGHolder.js" type="text/javascript"></script>
-        <script src="js/HeatMap.js" type="text/javascript"></script>
-        <script src="js/LineCurveChart.js" type="text/javascript"></script>
-        <script src="js/words.js" type="text/javascript"></script>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Word Visualizer by:</h1>
-            <ul>
-                <li>Juan Camilo Rodr&iacute;guez Dur&aacute;n</li>
-            </ul>
-            <div id="controls">
-                <input id="new_word_input" type="text">
-                <button id="add_btn" onclick="addWord()">Add</button>
-                <button  onclick="loadFromServer()">Load Multiple</button>
-            </div>
-            <div class="graph-container"> 
-                <div id="svg_containerA"></div>
-                <div id="svg_containerB"></div>
-                <div id="svg_containerC"></div>
-                <div id="svg_containerD"></div>
-                <div id="svg_containerE"></div>
-                <div id="svg_containerF"></div>
-                <div id="svg_containerG"></div>
-                <div id="svg_containerH"></div>
-                <div id="svg_containerI"></div>
-                <div id="svg_containerJ"></div>
-                <div id="svg_containerK"></div>
-                <div id="svg_containerL"></div>
-                <div id="svg_containerM"></div>
-                <div id="svg_containerN"></div>
-                <div id="svg_containerO"></div>
-                <div id="svg_containerP"></div>
-                <div id="svg_containerQ"></div>
-                <div id="svg_containerR"></div>
-                <div id="svg_containerS"></div>
-                <div id="svg_containerT"></div>
-                <div id="svg_containerU"></div>
-                <div id="svg_containerV"></div>
-                <div id="svg_containerW"></div>
-                <div id="svg_containerX"></div>
-                <div id="svg_containerY"></div>
-                <div id="svg_containerZ"></div>
-                <div id="svg_container-"></div>
-            </div>
-            <div class="graph-container">    
-                <div id="svg_container1"></div>
-                <div id="svg_container2"></div>
-                <div id="svg_container3"></div>
-                <div id="svg_container4"></div>
-                <div id="svg_container5"></div>
-                <div id="svg_container6"></div>
-                <div id="svg_container7"></div>
-                <div id="svg_container8"></div>
-                <div id="svg_container9"></div>
-                <div id="svg_container10"></div>
-                <div id="svg_container11"></div>
-                <div id="svg_container12"></div>
-            </div>
+    </script>
+    <script src="js/SVGHolder.js" type="text/javascript"></script>
+    <script src="js/HeatMap.js" type="text/javascript"></script>
+    <script src="js/LineCurveChart.js" type="text/javascript"></script>
+    <script src="js/words.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Word Visualizer by:</h1>
+    <ul>
+        <li>Juan Camilo Rodr&iacute;guez Dur&aacute;n</li>
+    </ul>
+    <div id="controls">
+        <div>
+            <input id="new_word_input" type="text">
+            <button id="add_btn" onclick="addWord()">Add</button>
+            <button onclick="loadFromServer()">Load Multiple</button>
         </div>
-    </body>
+        <div>
+            <label for="max_length" id="max_size_label">max word size</label>
+            <input name="max_length" id="max_length" min="1" max="30" value="5" step="1" type="range">
+        </div>
+        <div>
+            <label for="min_length" id="min_size_label">min word size</label>
+            <input name="min_length" id="min_length" value="1" min="1" max="30" step="1" type="range">
+        </div>
+    </div>
+    <div class="graph-container letter-container">
+        <div id="svg_containerA"></div>
+        <div id="svg_containerB"></div>
+        <div id="svg_containerC"></div>
+        <div id="svg_containerD"></div>
+        <div id="svg_containerE"></div>
+        <div id="svg_containerF"></div>
+        <div id="svg_containerG"></div>
+        <div id="svg_containerH"></div>
+        <div id="svg_containerI"></div>
+        <div id="svg_containerJ"></div>
+        <div id="svg_containerK"></div>
+        <div id="svg_containerL"></div>
+        <div id="svg_containerM"></div>
+        <div id="svg_containerN"></div>
+        <div id="svg_containerO"></div>
+        <div id="svg_containerP"></div>
+        <div id="svg_containerQ"></div>
+        <div id="svg_containerR"></div>
+        <div id="svg_containerS"></div>
+        <div id="svg_containerT"></div>
+        <div id="svg_containerU"></div>
+        <div id="svg_containerV"></div>
+        <div id="svg_containerW"></div>
+        <div id="svg_containerX"></div>
+        <div id="svg_containerY"></div>
+        <div id="svg_containerZ"></div>
+        <div id="svg_container-"></div>
+    </div>
+    <div class="graph-container incidence-container">
+        <div id="svg_container1"></div>
+        <div id="svg_container2"></div>
+        <div id="svg_container3"></div>
+        <div id="svg_container4"></div>
+        <div id="svg_container5"></div>
+        <div id="svg_container6"></div>
+        <div id="svg_container7"></div>
+        <div id="svg_container8"></div>
+        <div id="svg_container9"></div>
+        <div id="svg_container10"></div>
+        <div id="svg_container11"></div>
+        <div id="svg_container12"></div>
+    </div>
+</div>
+</body>
 </html>
