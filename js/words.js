@@ -1,9 +1,11 @@
 let tooltipDiv;
-let parsedData;
-const letterMatrix = [];
 const chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
     , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
+const letterMatrix = [];
 const letterFreq = [];
+const symbols = [];
+const sizes = [];
+let words = 0;
 
 let MAX_LENGTH = -1;
 
@@ -21,27 +23,29 @@ function init() {
 
 function loadFromServer() {
     d3.json("./data/words_dictionary.json", onDataLoaded);
-    d3.request("/data/compact.txt")
-        .mimeType("text/plain")
-        .response(data => data.response.split("\n"))
-        .get(data => {
-            console.log(data);
-            for (var i = 0; i < data.length; i++) {
-                parseData(data[i]);
-            }
-        });
+    // d3.request("/data/compact_complex.txt")
+    //     .mimeType("text/plain")
+    //     .response(data => data.response.split("\n"))
+    //     .get(data => {
+    //         // console.log(data);
+    //         for (var i = 0; i < data.length; i++) {
+    //             parseData(data[i]);
+    //         }
+    //         drawChars(letterMatrix);
+    //     });
+
 }
 
 function addIncidentChar(pos, src, target) {
-    if (typeof (letterMatrix[pos]) == "undefined") {
+    if (!letterMatrix[pos]) {
         letterMatrix[pos] = [];
     }
-    if (typeof (letterMatrix[pos][src]) == "undefined") {
+    if (!letterMatrix[pos][src]) {
         letterMatrix[pos][src] = [];
         letterMatrix[pos][src]["sum"] = 0;
         letterMatrix[pos]["sum"] = [];
     }
-    if (typeof (letterMatrix[pos][src][target]) == "undefined") {
+    if (!letterMatrix[pos][src][target]) {
         letterMatrix[pos][src][target] = 0;
         letterMatrix[pos]["sum"][target] = 0;
     }
@@ -51,16 +55,27 @@ function addIncidentChar(pos, src, target) {
 }
 
 function addCharPos(pos, c, size) {
-    if (typeof (letterFreq[size]) == "undefined") {
+    if (!letterFreq[size]) {
         letterFreq[size] = [];
     }
-    if (typeof (letterFreq[size][pos]) == "undefined") {
+    if (!letterFreq[size][pos]) {
         letterFreq[size][pos] = [];
     }
-    if (typeof (letterFreq[size][pos][c]) == "undefined") {
+    if (!letterFreq[size][pos][c]) {
         letterFreq[size][pos][c] = 0;
     }
     letterFreq[size][pos][c] = letterFreq[size][pos][c] + 1;
+}
+
+function addSymbol(pos, c) {
+    if (!symbols[pos]) {
+        symbols[pos] = [];
+        symbols[pos]["count"] = 0;
+    }
+    if (!symbols[pos][c]) {
+        symbols[pos][c] = 1;
+        symbols[pos]["count"] = symbols[pos]["count"] + 1;
+    }
 }
 
 function parseData(string) {
@@ -71,17 +86,25 @@ function parseData(string) {
     if (length > MAX_LENGTH) {
         MAX_LENGTH = length;
     }
+    if (!sizes[length]) {
+        sizes[length] = 0;
+    }
+    sizes[length] = sizes[length] + 1;
+
     for (i = 0; i < length - 1; i++) {
         c = string[i];
         n = string[i + 1];
         addIncidentChar(i, c, n);
-        addCharPos(i, c, length)
+        addCharPos(i, c, length);
+        addSymbol(i, c);
     }
     if (n) {
-        addCharPos(i, n, length)
+        addCharPos(i, n, length);
+        addSymbol(i, n);
     } else {
         addCharPos(i, string[0], length)
     }
+    words = words + 1;
 }
 
 function addWord() {
@@ -129,17 +152,57 @@ function updateTextInput(min, max) {
         minVal = maxVal;
         document.getElementById('min_length').value = minVal;
     }
+    document.getElementById('min_length').max = MAX_LENGTH;
+    document.getElementById('max_length').max = MAX_LENGTH;
+
     document.getElementById('max_size_label').innerText = `max word size: ${maxVal}`;
     document.getElementById('min_size_label').innerText = `min word size: ${minVal}`;
     drawLetterFreq(letterFreq, minVal, maxVal);
+    drawWordStats(minVal, maxVal);
+}
+
+function drawSizesDistribution(data, min = 1, max = MAX_LENGTH) {
+    const lcc = new LineCurveChart("", "#sizes_svg", [min, max], "Word sizes");
+    const sizesDistribution = [];
+    let obj;
+    for (let i = min; i < MAX_LENGTH; i++) {
+        obj = data[i];
+        if (!obj) {
+            obj = 0;
+        }
+        sizesDistribution.push({pos: i, value: obj});
+    }
+    lcc.itemInflater(sizesDistribution, letterFreqListener);
+}
+
+function drawSymbolsDistribution(data, min = 1, max = MAX_LENGTH) {
+    const lcc = new LineCurveChart("", "#symbols_svg", [min, max], "Symbols used per position");
+    const symbolsDistribution = [];
+    let obj;
+    for (let i = min; i < MAX_LENGTH; i++) {
+        obj = data[i];
+        if (!obj) {
+            obj = {"count": 0};
+        }
+        symbolsDistribution.push({pos: i, value: obj["count"]});
+    }
+    lcc.itemInflater(symbolsDistribution, letterFreqListener);
+}
+
+function drawWordStats(min = 1, max = MAX_LENGTH) {
+    d3.select(".word-properties").selectAll("svg").remove().exit();
+    drawSizesDistribution(sizes, min, max);
+    drawSymbolsDistribution(symbols, min, max);
+    document.getElementById("vocabulary_size").innerHTML = "vocabulary size: " + words;
 }
 
 function drawChars(data) {
     d3.select(".incidence-container").selectAll("svg").remove().exit();
-    for (var i = 0; i < data.length && i < 12; i++) {
+    for (let i = 0; i < data.length && i < 12; i++) {
         drawChar(data[i], i + 1);
     }
     drawLetterFreq(letterFreq);
+    drawWordStats();
 }
 
 function getSeriesFor(data, char, minLen, maxLen) {
@@ -162,13 +225,13 @@ function getSeriesFor(data, char, minLen, maxLen) {
 
 function drawChar(data, idx) {
     const xDomain = chars.slice();
-    xDomain.sort(function (a, b) {
+    xDomain.sort((a, b) => {
         const na = validateNumber(data[a]);
         const nb = validateNumber(data[b]);
         return na - nb;
     });
     const yDomain = xDomain.slice();
-    yDomain.sort(function (a, b) {
+    yDomain.sort((a, b) => {
         const na = validateNumber(data[a]);
         const nb = validateNumber(data[b]);
         return nb - na;

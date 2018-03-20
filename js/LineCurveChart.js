@@ -22,7 +22,9 @@ function LineCurveChart(title,
 
     this.itemInflater = function (data, elementListener) {
         const self = this;
-        self.yAxis.domain(d3.extent(data, d => d.value));
+        self.yAxis.domain(d3.extent(data, function (d) {
+            return d.value;
+        }));
         self.svgHolder.addLeftAxis(self.yAxis, yTitle);
         const curve = d3.line()
             .curve(d3.curveCatmullRom)

@@ -41,12 +41,19 @@
         </div>
         <div>
             <label for="max_length" id="max_size_label">max word size</label>
-            <input name="max_length" id="max_length" min="1" max="50" value="5" step="1" type="range">
+            <input name="max_length" id="max_length" min="1" value="5" step="1" type="range">
         </div>
         <div>
             <label for="min_length" id="min_size_label">min word size</label>
-            <input name="min_length" id="min_length" value="1" min="1" max="50" step="1" type="range">
+            <input name="min_length" id="min_length" value="1" min="1" step="1" type="range">
         </div>
+    </div>
+    <div>
+        <h2 id="vocabulary_size"></h2>
+    </div>
+    <div class="graph-container word-properties">
+        <div id="sizes_svg"></div>
+        <div id="symbols_svg"></div>
     </div>
     <div class="graph-container letter-container">
         <div id="svg_containerA"></div>
