@@ -5,6 +5,9 @@ const letterMatrix = [];
 const letterFreq = [];
 const symbols = [];
 const sizes = [];
+const trie = [];
+const MAX_DEEP = 3;
+
 let words = 0;
 
 let MAX_LENGTH = -1;
@@ -78,11 +81,27 @@ function addSymbol(pos, c) {
     }
 }
 
+function addTrieNode(idx, c, wordPos, lastChars) {
+    if (idx > MAX_DEEP) {
+        return;
+    }
+    let current = c;
+    let node = trie;
+    for (let i = 0; i < lastChars.length; i++) {
+        current = lastChars[i];
+        if (!node[current]) {
+            node[current] = {pos: wordPos, children: []};
+        }
+        node = node[current]["children"];
+    }
+}
+
 function parseData(string) {
     let c;
     let n;
     let i;
     let length = string.length;
+    let lastChars = [];
     if (length > MAX_LENGTH) {
         MAX_LENGTH = length;
     }
@@ -92,11 +111,14 @@ function parseData(string) {
     sizes[length] = sizes[length] + 1;
 
     for (i = 0; i < length - 1; i++) {
+
         c = string[i];
         n = string[i + 1];
         addIncidentChar(i, c, n);
         addCharPos(i, c, length);
         addSymbol(i, c);
+        addTrieNode(i, c, words, lastChars);
+        lastChars.push(c);
     }
     if (n) {
         addCharPos(i, n, length);
