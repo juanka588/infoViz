@@ -19,3 +19,7 @@
 #max_size_label, #min_size_label {
     padding: 20px;
 }
+
+div#controls div {
+    margin-top: 15px;
+}

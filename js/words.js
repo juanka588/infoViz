@@ -1,16 +1,17 @@
 let tooltipDiv;
+const MAX_DEEP = 3;
 const chars = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m"
     , "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "-"];
-const letterMatrix = [];
-const letterFreq = [];
-const symbols = [];
-const sizes = [];
-const trie = [];
-const MAX_DEEP = 3;
+
+let letterMatrix = [];
+let letterFreq = [];
+let symbols = [];
+let sizes = [];
+let trie = [];
 
 let words = 0;
 
-let MAX_LENGTH = -1;
+let maxLength = -1;
 
 window.onload = function () {
     init();
@@ -24,19 +25,33 @@ function init() {
     addControlsListeners();
 }
 
-function loadFromServer() {
-    d3.json("./data/words_dictionary.json", onDataLoaded);
-    // d3.request("/data/compact_complex.txt")
-    //     .mimeType("text/plain")
-    //     .response(data => data.response.split("\n"))
-    //     .get(data => {
-    //         // console.log(data);
-    //         for (var i = 0; i < data.length; i++) {
-    //             parseData(data[i]);
-    //         }
-    //         drawChars(letterMatrix);
-    //     });
+function restoreInitState() {
+    letterMatrix = [];
+    letterFreq = [];
+    symbols = [];
+    sizes = [];
+    trie = [];
+    words = 0;
+    maxLength = -1;
+}
 
+function loadFromServer() {
+    restoreInitState();
+    let file = d3.select("#file_selector").node().value;
+    if (file.includes("json")) {
+        d3.json(`./data/${file}`, onDataLoaded);
+    } else {
+        d3.request(`/data/${file}`)
+            .mimeType("text/plain")
+            .response(data => data.response.split("\n"))
+            .get(data => {
+                // console.log(data);
+                for (let i = 0; i < data.length; i++) {
+                    parseData(data[i]);
+                }
+                drawChars(letterMatrix);
+            });
+    }
 }
 
 function addIncidentChar(pos, src, target) {
@@ -102,8 +117,8 @@ function parseData(string) {
     let i;
     let length = string.length;
     let lastChars = [];
-    if (length > MAX_LENGTH) {
-        MAX_LENGTH = length;
+    if (length > maxLength) {
+        maxLength = length;
     }
     if (!sizes[length]) {
         sizes[length] = 0;
@@ -137,7 +152,7 @@ function addWord() {
     drawChars(letterMatrix);
 }
 
-function drawLetterFreq(data, min = 1, max = MAX_LENGTH) {
+function drawLetterFreq(data, min = 1, max = maxLength) {
     d3.select(".letter-container").selectAll("svg").remove().exit();
     let c;
     for (let i = 0; i < chars.length; i++) {
@@ -174,8 +189,8 @@ function updateTextInput(min, max) {
         minVal = maxVal;
         document.getElementById('min_length').value = minVal;
     }
-    document.getElementById('min_length').max = MAX_LENGTH;
-    document.getElementById('max_length').max = MAX_LENGTH;
+    document.getElementById('min_length').max = maxLength;
+    document.getElementById('max_length').max = maxLength;
 
     document.getElementById('max_size_label').innerText = `max word size: ${maxVal}`;
     document.getElementById('min_size_label').innerText = `min word size: ${minVal}`;
@@ -183,11 +198,11 @@ function updateTextInput(min, max) {
     drawWordStats(minVal, maxVal);
 }
 
-function drawSizesDistribution(data, min = 1, max = MAX_LENGTH) {
+function drawSizesDistribution(data, min = 1, max = maxLength) {
     const lcc = new LineCurveChart("", "#sizes_svg", [min, max], "Word sizes");
     const sizesDistribution = [];
     let obj;
-    for (let i = min; i < MAX_LENGTH; i++) {
+    for (let i = min; i < maxLength; i++) {
         obj = data[i];
         if (!obj) {
             obj = 0;
@@ -197,11 +212,11 @@ function drawSizesDistribution(data, min = 1, max = MAX_LENGTH) {
     lcc.itemInflater(sizesDistribution, letterFreqListener);
 }
 
-function drawSymbolsDistribution(data, min = 1, max = MAX_LENGTH) {
+function drawSymbolsDistribution(data, min = 1, max = maxLength) {
     const lcc = new LineCurveChart("", "#symbols_svg", [min, max], "Symbols used per position");
     const symbolsDistribution = [];
     let obj;
-    for (let i = min; i < MAX_LENGTH; i++) {
+    for (let i = min; i < maxLength; i++) {
         obj = data[i];
         if (!obj) {
             obj = {"count": 0};
@@ -211,11 +226,11 @@ function drawSymbolsDistribution(data, min = 1, max = MAX_LENGTH) {
     lcc.itemInflater(symbolsDistribution, letterFreqListener);
 }
 
-function drawWordStats(min = 1, max = MAX_LENGTH) {
+function drawWordStats(min = 1, max = maxLength) {
     d3.select(".word-properties").selectAll("svg").remove().exit();
     drawSizesDistribution(sizes, min, max);
     drawSymbolsDistribution(symbols, min, max);
-    document.getElementById("vocabulary_size").innerHTML = "vocabulary size: " + words;
+    document.getElementById("vocabulary_size").innerHTML = "vocabulary size: " + d3.format(",.4r")(words);
 }
 
 function drawChars(data) {
