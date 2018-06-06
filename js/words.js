@@ -41,7 +41,7 @@ function loadFromServer() {
     if (file.includes("json")) {
         d3.json(`./data/${file}`, onDataLoaded);
     } else {
-        d3.request(`/data/${file}`)
+        d3.request(`./data/${file}`)
             .mimeType("text/plain")
             .response(data => data.response.split("\n"))
             .get(data => {
