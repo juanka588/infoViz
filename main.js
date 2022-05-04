@@ -4,7 +4,7 @@ console.log("Starting");
 const host = "127.0.0.1";
 const port = 8384;
 const server = http.createServer(function (request, response) {
-    console.log("Recieved request:" + request.url);
+    console.log("Received request:" + request.url);
     fs.readFile("./" + request.url, function (error, data) {
         if (error) {
             response.writeHead(404, {"Content-type": "text/plain"});
