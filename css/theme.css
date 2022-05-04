@@ -7,37 +7,41 @@ and open the template in the editor.
     Created on : 9/11/2017, 03:47:45 PM
     Author     : JuanCamilo
 */
-body{
+body {
     background-color: #E1E2E1;
-    font-family: 'Roboto', Helvetica;
+    font-family: 'Roboto', Helvetica, serif;
 }
-h1{
+
+h1 {
     font-family: 'Roboto Mono', sans-serif;
     font-weight: bold;
 }
+
 div.container {
     width: 75%;
     margin-left: auto;
     margin-right: auto;
     text-align: center;
-    background-color:#F5F5F6;
+    background-color: #F5F5F6;
 }
-div.tooltip {	
-    position: absolute;			
-    text-align: center;			
+
+div.tooltip {
+    position: absolute;
+    text-align: center;
     max-width: 80px;
-    padding: 8px;				
-    font: 10px 'Roboto Mono', sans-serif;		
+    padding: 8px;
+    font: 10px 'Roboto Mono', sans-serif;
     background: #E1E2E1;
     border: 0;
-    border-radius: 8px;			
-    pointer-events: none;	
+    border-radius: 8px;
+    pointer-events: none;
 }
-.debug{
+
+.debug {
     border: 3px solid;
 }
 
-#svg_container{
+#svg_container {
     display: inline-block;
     align-content: center;
     margin: 0 auto;
@@ -54,8 +58,8 @@ div.tooltip {
     width: 100%; /* Full width */
     height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    background-color: rgb(0, 0, 0); /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
 }
 
 /* Modal Content */
@@ -66,7 +70,7 @@ div.tooltip {
     padding: 0;
     border: 1px solid #888;
     max-width: 300px;
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
     -webkit-animation-name: animatetop;
     -webkit-animation-duration: 0.4s;
     animation-name: animatetop;
@@ -75,13 +79,25 @@ div.tooltip {
 
 /* Add Animation */
 @-webkit-keyframes animatetop {
-    from {top:-300px; opacity:0} 
-    to {top:0; opacity:1}
+    from {
+        top: -300px;
+        opacity: 0
+    }
+    to {
+        top: 0;
+        opacity: 1
+    }
 }
 
 @keyframes animatetop {
-    from {top:-300px; opacity:0}
-    to {top:0; opacity:1}
+    from {
+        top: -300px;
+        opacity: 0
+    }
+    to {
+        top: 0;
+        opacity: 1
+    }
 }
 
 /* The Close Button */
@@ -108,7 +124,7 @@ div.tooltip {
 
 .modal-body {
     padding: 2px 16px;
-    align-self:  center;
+    align-self: center;
 }
 
 .modal-footer {
@@ -117,8 +133,8 @@ div.tooltip {
     color: white;
 }
 
-.discrete-separator{
-    fill:transparent;
-    stroke: black; 
+.discrete-separator {
+    fill: transparent;
+    stroke: black;
     stroke-dasharray: 2 1;
 }

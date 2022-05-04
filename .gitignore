@@ -1,2 +1,4 @@
-/infoViz/nbproject/private/
 /nbproject/private/
+.idea
+.scannerwork
+node_modules

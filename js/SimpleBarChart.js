@@ -1,22 +1,22 @@
 function SimpleBarChart(title,
-        containerID,
-        xDomain,
-        yDomain,
-        xTitle = "Candidates",
-        yTitle = "Votes",
-        svgHolder) {
+                        containerID,
+                        xDomain,
+                        yDomain,
+                        xTitle = "Candidates",
+                        yTitle = "Votes",
+                        svgHolder) {
     if (typeof (svgHolder) == "undefined") {
         this.svgHolder = new SVGHolder(500, 300, containerID
-                , {top: 20, right: 20, bottom: 20, left: 20}
-        , {top: 20, right: 0, bottom: 60, left: 70});
+            , {top: 20, right: 20, bottom: 20, left: 20}
+            , {top: 20, right: 0, bottom: 60, left: 70});
     } else {
         this.svgHolder = svgHolder;
     }
     this.svgHolder.addChartTitle(title);
     this.xAxis = d3.scaleBand()
-            .rangeRound([0, this.svgHolder.graphWidth])
-            .paddingInner(0.05)
-            .align(0.1);
+        .rangeRound([0, this.svgHolder.graphWidth])
+        .paddingInner(0.05)
+        .align(0.1);
     this.yAxis = d3.scaleLinear().rangeRound([this.svgHolder.graphHeight, 0]);
     this.xAxis.domain(xDomain);
     this.yAxis.domain(yDomain);
@@ -43,8 +43,8 @@ function SimpleBarChart(title,
             })
         ;
         displayElement
-                .transition()
-                .duration(1000)
+            .transition()
+            .duration(1000)
             .attr("transform", d => "translate(" + self.xAxis(d.data["key"]) + "," + self.yAxis(d[1]) + ")")
             .attr("height", d => self.yAxis(d[0]) - self.yAxis(d[1]));
         elementListener(displayElement);

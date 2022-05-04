@@ -21,7 +21,7 @@ function init() {
 }
 
 function parseData(d) {
-    for (let key in  candidatesMap) {
+    for (let key in candidatesMap) {
         if (!(key === "B" || key.includes("NSPP"))) {
             d["AV_" + key] = parseFloat(d["AV_" + key]);
             const newVal = parseFloat(d["EV_" + key]);

@@ -8,27 +8,30 @@ and open the template in the editor.
     Author     : Juan Camilo
 */
 
-.axis-title{
+.axis-title {
     font-family: 'Roboto Mono', sans-serif;
     font-weight: bold;
 }
-.country:hover{
+
+.country:hover {
     stroke: #c6a700 !important;
 }
 
-.modal-body table{
+.modal-body table {
     margin: 0 auto;
 }
-.modal-body table tr td:first-child{
+
+.modal-body table tr td:first-child {
     color: #1a237e;
     font-weight: bold;
     padding-right: 32px;
 }
 
-.legend-symbol{
+.legend-symbol {
     stroke: black;
-    fill:transparent;
+    fill: transparent;
 }
-.fixed-color{
-    stroke:black;
+
+.fixed-color {
+    stroke: black;
 }

@@ -7,23 +7,27 @@ and open the template in the editor.
     Created on : 17/12/2017, 12:02:23 PM
     Author     : Camilo
 */
-rect:hover,.arc:hover{
-    stroke:yellow !important;   
+rect:hover, .arc:hover {
+    stroke: yellow !important;
 }
-.badge *:hover{
-    cursor:pointer
+
+.badge *:hover {
+    cursor: pointer
 }
-.badge{
+
+.badge {
     display: inline-flex;
-    background:#1976d2;
+    background: #1976d2;
     margin: 4px;
     padding: 8px;
     border-radius: 20px;
 }
-.badge button:hover{
+
+.badge button:hover {
     background-color: hsla(120, 100%, 50%, 0.3);
 }
-.badge button{
+
+.badge button {
     background: transparent;
     margin-left: 8px;
     font-size: xx-small;
@@ -31,88 +35,113 @@ rect:hover,.arc:hover{
     color: white;
 }
 
-.operator,.value{
+.operator, .value {
     margin-left: 4px;
 }
 
-.field{
+.field {
     font-weight: bold;
     color: white;
 }
-.operator{
+
+.operator {
     color: white;
 }
-.value{
+
+.value {
     color: white;
 }
-.round{ 
+
+.round {
     border-radius: 50%;
     width: 80px;
     height: 80px;
 }
-.arc-label{
+
+.arc-label {
     font-size: xx-small;
 }
-.c-1{
+
+.c-1 {
     fill: #65DBFF;
 }
-.c-2{
+
+.c-2 {
     fill: #4299E8;
 }
-.c-S{
+
+.c-S {
     fill: #4247E8;
 }
-.c-F{
+
+.c-F {
     fill: #ee3d5d;
 }
-.c-M{
+
+.c-M {
     fill: #187ec2;
 }
-.c-NDA{
-    fill:#0088c6;
+
+.c-NDA {
+    fill: #0088c6;
 }
-.c-MLP{
-    fill:#83726d;
+
+.c-MLP {
+    fill: #83726d;
 }
-.c-EM{
-    fill:#ffd850;
+
+.c-EM {
+    fill: #ffd850;
 }
-.c-BH{
-    fill:#f39dc7;
+
+.c-BH {
+    fill: #f39dc7;
 }
-.c-NA{
-    fill:#a21700;
+
+.c-NA {
+    fill: #a21700;
 }
-.c-PP{
-    fill:#f96f43;
+
+.c-PP {
+    fill: #f96f43;
 }
-.c-JC{
-    fill:#464a4c;
+
+.c-JC {
+    fill: #464a4c;
 }
-.c-JL{
-    fill:#cee9f8;
+
+.c-JL {
+    fill: #cee9f8;
 }
-.c-JLM{
-    fill:#de2707;
+
+.c-JLM {
+    fill: #de2707;
 }
-.c-FA{
-    fill:#131413;
+
+.c-FA {
+    fill: #131413;
 }
-.c-FF{
-    fill:#75bbe2;
+
+.c-FF {
+    fill: #75bbe2;
 }
-.c-B{
-    fill:#B0B29C;
+
+.c-B {
+    fill: #B0B29C;
 }
-.c-NSPP{
-    fill:#14CC47;
+
+.c-NSPP {
+    fill: #14CC47;
 }
-.red{
-    fill:red;
+
+.red {
+    fill: red;
 }
-.gray{
-    fill:gray;
+
+.gray {
+    fill: gray;
 }
-.green{
-    fill:green;
+
+.green {
+    fill: green;
 }

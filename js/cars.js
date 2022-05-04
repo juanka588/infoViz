@@ -7,13 +7,13 @@ let tooltipDiv = null;
 
 let fixedSize = MARK_SIZE / 15.5;
 let symbolSimpleCross = function (size) {
-    return  "M -" + size + ",0 L " + size + ",0 M 0,-" + size + " L 0," + size;
+    return "M -" + size + ",0 L " + size + ",0 M 0,-" + size + " L 0," + size;
 };
 
 function init() {
     tooltipDiv = d3.select("body").append("div")
-            .attr("class", "tooltip")
-            .style("opacity", 0);
+        .attr("class", "tooltip")
+        .style("opacity", 0);
 
     addModalLogic('car_info');
     d3.tsv("./data/cars.tsv", function (error, data) {
@@ -90,6 +90,7 @@ function prepareSVG(data) {
     });
     addLegend(svgHolder, colorAxis);
 }
+
 function displayItem(e, g, data, xAxis, yAxis, colorAxis) {
     const displayElement = g.selectAll("g")
         .data(data)
@@ -118,21 +119,21 @@ function addListeners(element) {
         displayInfo(d);
     })
         .on('mouseover', d => {
-                tooltipDiv.transition()
-                        .duration(200)
-                        .style("opacity", .9);
-                tooltipDiv.html("<span class='axis-title'>Weight: </span> " + d.weight
-                        + "<br /><span class='axis-title'>MPG: </span>" + d.mpg)
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
+            tooltipDiv.transition()
+                .duration(200)
+                .style("opacity", .9);
+            tooltipDiv.html("<span class='axis-title'>Weight: </span> " + d.weight
+                + "<br /><span class='axis-title'>MPG: </span>" + d.mpg)
+                .style("left", (d3.event.pageX) + "px")
+                .style("top", (d3.event.pageY - 28) + "px");
 
-            })
+        })
         .on('mouseout', () => {
-                tooltipDiv.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-            })
-            .append("svg:title")
+            tooltipDiv.transition()
+                .duration(500)
+                .style("opacity", 0);
+        })
+        .append("svg:title")
         .text(d => "observation: " + d.name);
 }
 
@@ -154,8 +155,8 @@ function addLegend(svgHolder, colorAxis) {
             path.attr("transform", function () {
                 return "translate(" + x + "," + (y - 5) + ")";
             })
-                    .attr("class", elements[i].class)
-                    .attr("d", elements[i].mark);
+                .attr("class", elements[i].class)
+                .attr("d", elements[i].mark);
             if (elements[i].class === "fixed-color") {
                 path.attr("fill", elements[i].color);
             }
@@ -163,7 +164,7 @@ function addLegend(svgHolder, colorAxis) {
         }
         let txt = svgHolder.svg.append("text");
         txt.attr("transform", "translate(" + x + "," + y + ")")
-                .text(elements[i].label);
+            .text(elements[i].label);
         if (elements[i].mark == null) {
             txt.attr("class", "axis-title");
         }
@@ -189,6 +190,7 @@ function getLegendElements(colorAxis) {
     }
     return elements;
 }
+
 function displayInfo(d) {
     const nameSpan = document.getElementById("car_name");
     const weightSpan = document.getElementById("car_weight");

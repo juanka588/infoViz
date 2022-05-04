@@ -7,45 +7,53 @@ and open the template in the editor.
     Created on : 28/10/2017, 06:22:18 PM
     Author     : JuanCamilo
 */
-table { 
-    border: 1px solid black; width: 12em;
+table {
+    border: 1px solid black;
+    width: 12em;
 }
-td    { 
-    text-align: left; padding-left: 4px;
+
+td {
+    text-align: left;
+    padding-left: 4px;
 }
-th{
+
+th {
     text-align: center;
 }
-tr:hover{
+
+tr:hover {
     background: gray;
 }
-circle:hover{
+
+circle:hover {
     fill: purple !important;
 }
 
-circle.dots1{
+circle.dots1 {
     fill: red;
 }
 
-circle.dots2{
+circle.dots2 {
     fill: blue;
 }
 
-circle.dots3{
+circle.dots3 {
     fill: green;
 }
 
-circle.dots4{
+circle.dots4 {
     fill: gold;
 }
-.line{
+
+.line {
     fill: none;
-    stroke:steelblue;
-    stroke-linejoin:round;
-    stroke-linecap:round;
-    stroke-width:1.5;
+    stroke: steelblue;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-width: 1.5;
 }
-.ds1,.ds2,.ds3,.ds4{ 
-    margin: 10px; 
+
+.ds1, .ds2, .ds3, .ds4 {
+    margin: 10px;
     display: inline-block;
 }

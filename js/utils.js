@@ -5,6 +5,7 @@ function loadScript(src) {
     const head = document.getElementsByTagName("head")[0];
     head.appendChild(newJS);
 }
+
 function downloadObjectAsJson(exportObj, exportName) {
     const jsonStr = JSON.stringify(exportObj);
     const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(jsonStr);
@@ -21,11 +22,11 @@ function toArray(obj, properties, field) {
     for (let i = 0; i < properties.length; i++) {
         prop = properties[i];
         arr.push(
-                {
-                    0: 0
-                    , 1: obj[prop]
-                    , data: {key: prop, value: obj[prop], field: field}
-                }
+            {
+                0: 0
+                , 1: obj[prop]
+                , data: {key: prop, value: obj[prop], field: field}
+            }
         );
     }
     return [arr];
